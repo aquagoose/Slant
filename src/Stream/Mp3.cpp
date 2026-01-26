@@ -1,13 +1,19 @@
 #define MINIMP3_IMPLEMENTATION
 
 #include "mixr/Stream/Mp3.hpp"
+#include "StringUtils.h"
 
 #include <stdexcept>
 #include <iostream>
 
 namespace mixr::Stream {
     Mp3::Mp3(const std::string& path) {
-        if (mp3dec_ex_open(&_mp3, path.c_str(), MP3D_SEEK_TO_SAMPLE))  {
+#if _WIN32
+        const auto wpath = ToWString(path);
+        if (mp3dec_ex_open_w(&_mp3, wpath.c_str(), MP3D_SEEK_TO_SAMPLE)) {
+#else
+        if (mp3dec_ex_open(&_mp3, path.c_str(), MP3D_SEEK_TO_SAMPLE)) {
+#endif
             throw std::runtime_error("Failed to load mp3.");
         }
 

@@ -40,7 +40,10 @@ set(files include/mixr/mixr.hpp
         lib/minimp3/minimp3.h
         lib/minimp3/minimp3_ex.h
         include/mixr/Stream/Mp3.h
-        src/C/Mp3.cpp)
+        src/C/Mp3.cpp
+        src/Stream/StringUtils.h
+        src/Stream/StringUtils.cpp
+)
 
 if (WIN32)
     list(APPEND files src/Device/SdlDevice.h src/Device/SdlDevice.cpp)
@@ -67,6 +70,7 @@ endif()
 
 set(WITH_OGG OFF CACHE BOOL "" FORCE)
 set(INSTALL_MANPAGES OFF CACHE BOOL "" FORCE)
+set(ENABLE_MULTITHREADING OFF CACHE BOOL "" FORCE)
 add_subdirectory(lib/flac)
 target_link_libraries(mixr PUBLIC FLAC::FLAC++)
 

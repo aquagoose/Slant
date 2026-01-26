@@ -1,4 +1,5 @@
 #include "mixr/Stream/Wav.hpp"
+#include "StringUtils.h"
 
 #include <stdexcept>
 
@@ -11,7 +12,12 @@ namespace mixr::Stream {
         constexpr uint32_t fmt  = 0x20746D66;
         constexpr uint32_t data = 0x61746164;
 
+#if _WIN32
+        const auto wpath = ToWString(path);
+        _stream = std::ifstream(wpath, std::ios::in | std::ios::binary);
+#else
         _stream = std::ifstream(path, std::ios::in | std::ios::binary);
+#endif
 
         uint32_t magic;
         _stream.read((char*) &magic, sizeof(magic));

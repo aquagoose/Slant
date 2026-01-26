@@ -6,6 +6,5 @@ using namespace mixr::Stream;
 
 void mxStreamLoadVorbis(const char* path, MxAudioStream **pAudioStream) {
     Vorbis* vorbis = new Vorbis(path);
-
     *pAudioStream = (MxAudioStream*) vorbis;
 }

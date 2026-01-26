@@ -6,13 +6,11 @@ using namespace mixr::Stream;
 
 void mxStreamLoadWav(const char* path, MxAudioStream **pAudioStream) {
     Wav* wav = new Wav(path);
-
     *pAudioStream = (MxAudioStream*) wav;
 }
 
 bool mxWavIsADPCM(MxAudioStream *stream) {
     Wav* wav = (Wav*) stream;
-
     return wav->IsADPCM();
 }
 

@@ -1,13 +1,23 @@
 #include "mixr/Stream/Vorbis.hpp"
+#include "StringUtils.h"
 
 #include <stdexcept>
 #include <stb_vorbis.c>
 
 namespace mixr::Stream {
     Vorbis::Vorbis(const std::string& path) {
-        int error;
-        _vorbis = stb_vorbis_open_filename(path.c_str(), &error, nullptr);
+        FILE* f;
+#ifdef _WIN32
+        const auto wpath = ToWString(path);
+        if (_wfopen_s(&f, wpath.c_str(), L"rb") != 0)
+            throw std::runtime_error("Failed to open file.");
+#else
+        if (fopen_s(&f, path.c_str(), "rb") != 0)
+            throw std::runtime_error("Failed to open file.");
+#endif
 
+        int error;
+        _vorbis = stb_vorbis_open_file(f, true, &error, nullptr);
         if (!_vorbis) {
             throw std::runtime_error("Failed to load vorbis: Error code " + std::to_string(error));
         }

@@ -14,7 +14,7 @@ namespace mixr::Stream {
 
 #if _WIN32
         const auto wpath = ToWString(path);
-        _stream = std::ifstream(wpath, std::ios::in | std::ios::binary);
+        _stream = std::ifstream(wpath.c_str(), std::ios::in | std::ios::binary);
 #else
         _stream = std::ifstream(path, std::ios::in | std::ios::binary);
 #endif

@@ -176,7 +176,7 @@ namespace mixr::Stream {
         auto decoder = dynamic_cast<FlacDecoder*>(_file.get());
 
         size_t position;
-        decoder->get_decode_position(&position);
+        decoder->get_decode_position((FLAC__uint64*) &position);
 
         return position;
     }

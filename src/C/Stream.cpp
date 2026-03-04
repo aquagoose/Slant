@@ -49,8 +49,9 @@ size_t mxStreamGetLengthInSamples(MxAudioStream *stream) {
 
 void mxStreamGetPCM(MxAudioStream *stream, uint8_t *data, size_t *dataLength) {
     AudioStream* aStream = (AudioStream*) stream;
+    auto format = aStream->Format();
 
-    *dataLength = aStream->LengthInSamples();
+    *dataLength = aStream->LengthInSamples() * format.BytesPerSample() * format.Channels;
 
     if (data) {
         auto pcmData = aStream->GetPCM();

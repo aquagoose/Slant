@@ -12,7 +12,8 @@ namespace mixr::Stream {
         if (_wfopen_s(&f, wpath.c_str(), L"rb") != 0)
             throw std::runtime_error("Failed to open file.");
 #else
-        if (fopen_s(&f, path.c_str(), "rb") != 0)
+        f = fopen(path.c_str(), "rb");
+        if (!f)
             throw std::runtime_error("Failed to open file.");
 #endif
 

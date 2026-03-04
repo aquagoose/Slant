@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    auto stream = std::make_unique<Stream::Mp3>(argv[1]);
+    auto stream = std::make_unique<Stream::Wav>(argv[1]);
     auto format = stream->Format();
     //auto data = wav.GetPCM();
 

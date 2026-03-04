@@ -19,6 +19,13 @@ namespace mixr::Stream {
         _stream = std::ifstream(path, std::ios::in | std::ios::binary);
 #endif
 
+        if (!_stream.is_open())
+            throw std::runtime_error("Failed to open file!");
+
+        _stream.seekg(0, std::ios::end);
+        uint32_t fileSize = _stream.tellg();
+        _stream.seekg(0, std::ios::beg);
+
         uint32_t magic;
         _stream.read((char*) &magic, sizeof(magic));
         if (magic != riff) {
@@ -97,12 +104,12 @@ namespace mixr::Stream {
                             break;
                         }
 
-                        case 17: {
+                        /*case 17: {
                             _format.DataType = DataType::I16;
                             _isAdpcm = true;
                             _adpcmInfo = {
-                               /* .Type = */ ADPCMType::IMA,
-                               /* .ChunkSize = */ blockAlign
+                               /* .Type = ADPCMType::IMA,
+                               /* .ChunkSize = blockAlign
                             };
 
                             // MS IMA ADPCM fmt headers contain extra data that we don't need, so just skip over it.
@@ -114,7 +121,7 @@ namespace mixr::Stream {
 
                             break;
 
-                        }
+                        }*/
 
                         default:
                             throw std::runtime_error("Unsupported data type.");
@@ -127,6 +134,12 @@ namespace mixr::Stream {
                     _dataStartPoint = _stream.tellg();
                     _currentBufferPos = _dataStartPoint;
                     _dataLength = chunkSize;
+
+                    // Solve the problem of some wav files being written incorrectly and having incorrect data sizes
+                    // in the headers.
+                    // TODO: This is a hack and there may potentially be a better way to solve this.
+                    if (_dataLength > fileSize - _dataStartPoint)
+                        _dataLength = fileSize - _dataStartPoint;
 
                     return;
                 }

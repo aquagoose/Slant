@@ -16,18 +16,30 @@ extern "C" {
 
 typedef struct SlContext SlContext;
 
+// Contains various results and errors that can occur when calling Slant functions.
 typedef enum
 {
+    // Everything worked okay, and there was no issue.
     SL_RESULT_OK,
 
+    // An unknown/undocumented issue occurred. If you see this error, it should be reported.
     SL_RESULT_UNKNOWN_ERROR,
+
+    // An allocation failed, likely due to out of memory.
     SL_RESULT_OUT_OF_MEMORY,
 
+    // An invalid context was passed as a parameter.
     SL_RESULT_INVALID_CONTEXT,
+
+    // An invalid buffer was passed as a parameter.
     SL_RESULT_INVALID_BUFFER,
+
+    // An invalid source was passed as a parameter.
     SL_RESULT_INVALID_SOURCE
 } SlResult;
 
+// Information used on context creation.
+// Currently, this is empty, but this is reserved for future use.
 typedef struct
 {
 

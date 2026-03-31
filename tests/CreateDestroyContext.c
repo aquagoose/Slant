@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     SlResult result = slCreateContext(&contextInfo, &context);
     if (result != SL_RESULT_OK)
     {
-        printf("Failed to create context! Error code %d\n", result);
+        printf("Failed to create context! %s\n", slResultToString(result));
         return 1;
     }
 

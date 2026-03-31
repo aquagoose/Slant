@@ -30,7 +30,26 @@ int main(int argc, char **argv)
     contextInfo.sampleRate = 44100;
 
     SlContext* context;
-    slCreateContext(&contextInfo, &context);
+    SlResult result = slCreateContext(&contextInfo, &context);
+    if (result != SL_RESULT_OK)
+    {
+        printf("Failed to create context! %s\n", slResultToString(result));
+        return 1;
+    }
+
+    SlSourceInfo sourceInfo;
+    sourceInfo.spec.dataFormat = SL_FORMAT_F32;
+    sourceInfo.spec.sampleRate = 44100;
+    sourceInfo.spec.channels = 2;
+    sourceInfo.type = SL_SOURCE_PCM;
+
+    SlSource source;
+    result = slContextCreateSource(context, &sourceInfo, &source);
+    if (result != SL_RESULT_OK)
+    {
+        printf("Failed to create source! %s\n", slResultToString(result));
+        return 1;
+    }
 
     SDL_AudioSpec spec;
     spec.format = SDL_AUDIO_F32;

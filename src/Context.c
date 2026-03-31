@@ -25,12 +25,22 @@ typedef struct
 
 typedef struct
 {
+    bool valid;
+    SlAudioSpec spec;
+} SlantSource;
+
+typedef struct
+{
     uint32_t sampleRate;
     float masterVolume;
 
     SlantBuffer *buffers;
     size_t buffersLength;
     size_t buffersCapacity;
+
+    SlantSource *sources;
+    size_t sourcesLength;
+    size_t sourcesCapacity;
 } SlantContext;
 
 SlResult slCreateContext(const SlContextInfo *info, SlContext **context)
@@ -59,6 +69,17 @@ SlResult slCreateContext(const SlContextInfo *info, SlContext **context)
         return SL_RESULT_OUT_OF_MEMORY;
     }
 
+    ctx->sources = (SlantSource *) malloc(INITIAL_CAPACITY * sizeof(SlantSource));
+    ctx->sourcesLength = 0;
+    ctx->sourcesCapacity = INITIAL_CAPACITY;
+    if (!ctx->sources)
+    {
+        *context = NULL;
+        free(ctx->buffers);
+        free(ctx);
+        return SL_RESULT_OUT_OF_MEMORY;
+    }
+
     *context = (SlContext *) ctx;
     return SL_RESULT_OK;
 }
@@ -66,6 +87,12 @@ SlResult slCreateContext(const SlContextInfo *info, SlContext **context)
 void slDestroyContext(SlContext *context)
 {
     SlantContext *ctx = (SlantContext *) context;
+
+    for (size_t i = 0; i < ctx->sourcesLength; i++)
+    {
+        // TODO: For later
+    }
+    free(ctx->sources);
 
     for (size_t i = 0; i < ctx->buffersLength; i++)
     {
@@ -112,6 +139,37 @@ SlResult slContextCreateBuffer(SlContext *context, SlBuffer *buffer)
     ctx->buffers[id] = buf;
 
     buffer->id = id;
+    return SL_RESULT_OK;
+}
+
+SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source)
+{
+    CHECK_CONTEXT(context);
+    SlantContext *ctx = (SlantContext *) context;
+
+    if (info->type != SL_SOURCE_PCM)
+        return SL_RESULT_INVALID_PARAMETER;
+
+    SlantSource src;
+    src.valid = true;
+    src.spec = info->spec;
+
+    // Resize sources array
+    if (ctx->sourcesLength + 1 >= ctx->sourcesCapacity)
+    {
+        const size_t newCapacity = ctx->sourcesCapacity << 1;
+        SlantSource *newSourceArray = (SlantSource *) realloc(ctx->sources, newCapacity * sizeof(SlantSource));
+        if (!newSourceArray)
+            return SL_RESULT_OUT_OF_MEMORY;
+        ctx->sources = newSourceArray;
+        ctx->sourcesCapacity = newCapacity;
+    }
+
+    const size_t id = ctx->sourcesLength;
+    ctx->sourcesLength++;
+    ctx->sources[id] = src;
+
+    source->id = id;
     return SL_RESULT_OK;
 }
 

@@ -6,17 +6,22 @@ int main(int argc, char **argv)
     SlContextInfo contextInfo;
     contextInfo.sampleRate = 44100;
 
-    printf("Creating context.\n");
     SlContext *context;
     SlResult result = slCreateContext(&contextInfo, &context);
     if (result != SL_RESULT_OK)
     {
-        printf("Failed to create context! Error code %d\n", result);
+        printf("Failed to create context! %d\n", result);
         return 1;
     }
 
-    printf("Destroying context.\n");
-    slDestroyContext(context);
+    SlBuffer buffer;
+    result = slContextCreateBuffer(context, &buffer);
+    if (result != SL_RESULT_OK)
+    {
+        printf("Failed to create buffer! %d\n", result);
+        return 1;
+    }
 
+    slDestroyContext(context);
     return 0;
 }

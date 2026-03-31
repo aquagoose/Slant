@@ -15,6 +15,10 @@ extern "C" {
 #endif
 
 typedef struct SlContext SlContext;
+typedef struct
+{
+    size_t id;
+} SlBuffer;
 
 // Contains various results and errors that can occur when calling Slant functions.
 typedef enum
@@ -28,6 +32,9 @@ typedef enum
     // An allocation failed, likely due to out of memory.
     SL_RESULT_OUT_OF_MEMORY,
 
+    // An invalid parameter was passed.
+    SL_RESULT_INVALID_PARAMETER,
+
     // An invalid context was passed as a parameter.
     SL_RESULT_INVALID_CONTEXT,
 
@@ -39,20 +46,22 @@ typedef enum
 } SlResult;
 
 // Information used on context creation.
-// Currently, this is empty, but this is reserved for future use.
 typedef struct
 {
-
+    uint32_t sampleRate;
 } SlContextInfo;
 
 // Create a Slant context.
-SL_API SlResult slCreateContext(SlContextInfo *info, SlContext **context);
+SL_API SlResult slCreateContext(const SlContextInfo *info, SlContext **context);
 
 // Destroy a Slant context.
 SL_API void slDestroyContext(SlContext *context);
 
 // Mix to a stereo interleaved float buffer.
-SL_API void slContextMixStereoF32(SlContext *context, uint32_t sampleRate, float* buffer, size_t bufferLength);
+SL_API void slContextMixStereoF32(SlContext *context, float* buffer, size_t bufferLength);
+
+// Create an audio buffer.
+SL_API SlResult slContextCreateBuffer(SlContext *context, SlBuffer *buffer);
 
 #ifdef __cplusplus
 }

@@ -2,7 +2,6 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <string.h>
 
 #define INITIAL_CAPACITY 16
@@ -127,17 +126,13 @@ float GetSample(const SlDataFormat format, const size_t bytePos, const uint8_t *
     switch (format)
     {
         case SL_FORMAT_I8:
-        {
             return (float) (int8_t) buffer[bytePos] / (float) INT8_MAX;
-        }
         case SL_FORMAT_U8:
-        {
             return (float) ((int16_t) (buffer[bytePos] - 128)) / (float) INT8_MAX;
-        }
         case SL_FORMAT_I16:
-            return 0;
+            return (float) (int16_t) (buffer[bytePos] | buffer[bytePos + 1] << 8) / (float) INT16_MAX;
         case SL_FORMAT_I32:
-            return 0;
+            return (float) (int32_t) ((buffer[bytePos]) | (buffer[bytePos + 1] << 8) | (buffer[bytePos + 2] << 16) | (buffer[bytePos + 3] << 24)) / (float) INT32_MAX;
         case SL_FORMAT_F32:
         {
             uint32_t value = (uint32_t) ((buffer[bytePos]) | (buffer[bytePos + 1] << 8) | (buffer[bytePos + 2] << 16) | (buffer[bytePos + 3] << 24));

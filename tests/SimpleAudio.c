@@ -66,7 +66,7 @@ int main(int argc, char **argv)
     }
 
     SlSourceInfo sourceInfo;
-    sourceInfo.spec.dataFormat = SL_FORMAT_I32;
+    sourceInfo.spec.dataFormat = SL_FORMAT_I16;
     sourceInfo.spec.sampleRate = 44100;
     sourceInfo.spec.channels = 2;
     sourceInfo.type = SL_SOURCE_PCM;

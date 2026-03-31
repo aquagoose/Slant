@@ -31,6 +31,10 @@ typedef struct
     // Ensures the base speed of 1.0 is correct regardless of sample rate.
     // For example, if spec.sampleRate = 44100, and context.sampleRate = 48000, then this value will be ~0.9
     double speedAdjust;
+    // Size in bytes of a single channel.
+    size_t channelStride;
+    // Size of one sample in bytes. A sample in Slant includes ALL channels.
+    size_t sampleStride;
 
     // The currently queued buffers to play.
     size_t *queuedBuffers;
@@ -164,10 +168,10 @@ void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLengt
             const size_t bufferId = source->queuedBuffers[source->queuedBuffersFront];
             const SlantBuffer *buf = &ctx->buffers[bufferId];
 
-            const size_t bytePos = source->position * 8;
+            const size_t bytePos = source->position * source->sampleStride;
 
             const float sampleL = GetSample(spec->dataFormat, bytePos, buf->data);
-            const float sampleR = GetSample(spec->dataFormat, bytePos + 4, buf->data);
+            const float sampleR = GetSample(spec->dataFormat, bytePos + source->channelStride, buf->data);
 
             buffer[i + 0] += sampleL;
             buffer[i + 1] += sampleR;
@@ -250,10 +254,34 @@ SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlS
     if (info->type != SL_SOURCE_PCM)
         return SL_RESULT_INVALID_PARAMETER;
 
+    SlAudioSpec spec = info->spec;
+
     SlantSource src;
     src.valid = true;
-    src.spec = info->spec;
+    src.spec = spec;
     src.speedAdjust = (double) info->spec.sampleRate / (double) ctx->sampleRate;
+    src.channelStride = 0;
+
+    // Set the channel stride to the size of the data format in bytes.
+    // The channel stride determines how far the sampler should go to find the next channel.
+    // In the case of stereo, it determines how many bytes from the left sample, is the right sample.
+    switch (spec.dataFormat)
+    {
+        case SL_FORMAT_I8:
+        case SL_FORMAT_U8:
+            src.channelStride = 1;
+            break;
+        case SL_FORMAT_I16:
+            src.channelStride = 2;
+            break;
+        case SL_FORMAT_I32:
+        case SL_FORMAT_F32:
+            src.channelStride = 4;
+            break;
+    }
+
+    // The sample stride is the size in bytes of a Slant sample, which includes all channels.
+    src.sampleStride = src.channelStride * spec.channels;
 
     src.queuedBuffers = (size_t *) malloc(INITIAL_CAPACITY * sizeof(size_t));
     src.queuedBuffersCapacity = INITIAL_CAPACITY;

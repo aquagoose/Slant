@@ -1,12 +1,15 @@
 find_package(SDL3 REQUIRED)
 
 message(STATUS "Searching for tests.")
+
+file(GLOB TEST_C_UTILS Utils/*.h Utils/*.c)
+
 file(GLOB TEST_C_SRC *.c)
 foreach (file IN LISTS TEST_C_SRC)
     get_filename_component(filename ${file} NAME_WE)
     set(testname Test_C_${filename})
     message(STATUS "${file} -> ${testname}")
-    add_executable(${testname} ${file})
+    add_executable(${testname} ${file} ${TEST_C_UTILS})
     target_link_libraries(${testname} PRIVATE Slant)
     target_link_libraries(${testname} PRIVATE SDL3::SDL3)
 endforeach ()

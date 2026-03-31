@@ -2,12 +2,14 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
+
+#define INITIAL_CAPACITY 16
 
 #define CHECK_CONTEXT(ctx) if (!ctx) return SL_RESULT_INVALID_CONTEXT;
 #define CHECK_BUFFER(ctx, buffer) if (buffer.id > ctx->buffersLength || !ctx->buffers[buffer.id].valid) return SL_RESULT_INVALID_BUFFER;
-
-#define INITIAL_CAPACITY 16
+#define CHECK_SOURCE(ctx, source) if (source.id > ctx->sourcesLength || !ctx->sources[source.id].valid) return SL_RESULT_INVALID_SOURCE;
 
 typedef struct
 {
@@ -27,11 +29,22 @@ typedef struct
 {
     bool valid;
     SlAudioSpec spec;
+    // Ensures the base speed of 1.0 is correct regardless of sample rate.
+    // For example, if spec.sampleRate = 44100, and context.sampleRate = 48000, then this value will be ~0.9
+    double speedAdjust;
 
+    // The currently queued buffers to play.
     size_t *queuedBuffers;
     size_t queuedBuffersCapacity;
-    size_t queuedBuffersTop;
-    size_t queuedBuffersBottom;
+    size_t queuedBuffersFront;
+    size_t queuedBuffersBack;
+
+    // The current playing state
+    bool playing;
+
+    // The current sample position
+    size_t position;
+    double finePosition;
 } SlantSource;
 
 typedef struct
@@ -109,6 +122,32 @@ void slDestroyContext(SlContext *context)
     free(ctx);
 }
 
+float GetSample(const SlDataFormat format, const size_t bytePos, const uint8_t *buffer)
+{
+    switch (format)
+    {
+        case SL_FORMAT_I8:
+        {
+            return (float) (int8_t) buffer[bytePos] / (float) INT8_MAX;
+        }
+        case SL_FORMAT_U8:
+        {
+            return (float) ((int16_t) (buffer[bytePos] - 128)) / (float) INT8_MAX;
+        }
+        case SL_FORMAT_I16:
+            return 0;
+        case SL_FORMAT_I32:
+            return 0;
+        case SL_FORMAT_F32:
+        {
+            uint32_t value = (uint32_t) ((buffer[bytePos]) | (buffer[bytePos + 1] << 8) | (buffer[bytePos + 2] << 16) | (buffer[bytePos + 3] << 24));
+            return *(float*) &value;
+        }
+    }
+
+    return 0;
+}
+
 void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLength)
 {
     SlantContext *ctx = (SlantContext *) context;
@@ -117,6 +156,29 @@ void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLengt
     {
         buffer[i + 0] = 0.0f;
         buffer[i + 1] = 0.0f;
+
+        for (size_t src = 0; src < ctx->sourcesLength; src++)
+        {
+            SlantSource *source = &ctx->sources[src];
+
+            if (!source->playing)
+                continue;
+
+            const SlAudioSpec *spec = &source->spec;
+
+            const size_t bufferId = source->queuedBuffers[source->queuedBuffersFront];
+            const SlantBuffer *buf = &ctx->buffers[bufferId];
+
+            const size_t bytePos = source->position * 8;
+
+            const float sampleL = GetSample(spec->dataFormat, bytePos, buf->data);
+            const float sampleR = GetSample(spec->dataFormat, bytePos + 4, buf->data);
+
+            buffer[i + 0] += sampleL;
+            buffer[i + 1] += sampleR;
+
+            source->position += 1;
+        }
     }
 }
 
@@ -196,6 +258,18 @@ SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlS
     SlantSource src;
     src.valid = true;
     src.spec = info->spec;
+    src.speedAdjust = (double) info->spec.sampleRate / (double) ctx->sampleRate;
+
+    src.queuedBuffers = (size_t *) malloc(INITIAL_CAPACITY * sizeof(size_t));
+    src.queuedBuffersCapacity = INITIAL_CAPACITY;
+    src.queuedBuffersFront = 0;
+    src.queuedBuffersBack = 0;
+    if (!src.queuedBuffers)
+        return SL_RESULT_OUT_OF_MEMORY;
+
+    src.playing = true;
+    src.position = 0;
+    src.finePosition = 0.0;
 
     // Resize sources array
     if (ctx->sourcesLength + 1 >= ctx->sourcesCapacity)
@@ -218,5 +292,15 @@ SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlS
 
 SlResult slContextSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffer)
 {
+    CHECK_CONTEXT(context);
+
+    SlantContext *ctx = (SlantContext *) context;
+    CHECK_SOURCE(ctx, source);
+    CHECK_BUFFER(ctx, buffer);
+
+    SlantSource *src = &ctx->sources[buffer.id];
+    src->queuedBuffers[src->queuedBuffersBack] = buffer.id;
+    src->queuedBuffersBack++;
+
     return SL_RESULT_OK;
 }

@@ -15,8 +15,8 @@ void AudioStream(void* userdata, SDL_AudioStream* stream, int additional_amount,
         SlContext *context = (SlContext *) userdata;
         slContextMixStereoF32(context, buffer, 512);
 
-        SDL_PutAudioStreamData(stream, buffer, 512);
-        total_amount -= 512;
+        SDL_PutAudioStreamData(stream, buffer, 512 * sizeof(float));
+        total_amount -= 512 * sizeof(float);
     }
 }
 
@@ -79,6 +79,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    slContextSourceQueueBuffer(context, source, buffer);
+
     SDL_AudioSpec spec;
     spec.format = SDL_AUDIO_F32;
     spec.channels = 2;
@@ -87,7 +89,7 @@ int main(int argc, char **argv)
     SDL_AudioStream* stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, AudioStream, context);
     SDL_ResumeAudioStreamDevice(stream);
 
-    sleep(10);
+    sleep(120);
 
     SDL_DestroyAudioStream(stream);
     SDL_Quit();

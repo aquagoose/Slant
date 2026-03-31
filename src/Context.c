@@ -10,6 +10,8 @@
 #define CHECK_BUFFER(ctx, buffer) if (buffer.id > ctx->buffersLength || !ctx->buffers[buffer.id].valid) return SL_RESULT_INVALID_BUFFER;
 #define CHECK_SOURCE(ctx, source) if (source.id > ctx->sourcesLength || !ctx->sources[source.id].valid) return SL_RESULT_INVALID_SOURCE;
 
+#define LERP(a, b, amount) (amount * (b - a)) + a;
+
 typedef struct
 {
     // As buffers are never deleted from the buffers list once created (and are instead reused), we must ensure a buffer
@@ -170,13 +172,27 @@ void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLengt
 
             const size_t bytePos = source->position * source->sampleStride;
 
-            const float sampleL = GetSample(spec->dataFormat, bytePos, buf->data);
-            const float sampleR = GetSample(spec->dataFormat, bytePos + source->channelStride, buf->data);
+            float sampleL = GetSample(spec->dataFormat, bytePos, buf->data);
+            float sampleR = GetSample(spec->dataFormat, bytePos + source->channelStride, buf->data);
+
+            // Linear interpolation
+            {
+                const size_t prevPos = source->position == 0 ? 0 : ((source->position - 1) * source->sampleStride);
+                const float prevSampleL = GetSample(spec->dataFormat, prevPos, buf->data);
+                const float prevSampleR = GetSample(spec->dataFormat, prevPos + source->channelStride, buf->data);
+                sampleL = LERP(prevSampleL, sampleL, source->finePosition);
+                sampleR = LERP(prevSampleR, sampleR, source->finePosition);
+            }
 
             buffer[i + 0] += sampleL;
             buffer[i + 1] += sampleR;
 
-            source->position += 1;
+            source->finePosition += source->speedAdjust;
+            // Increase the source's position by the integer value of its fine position.
+            // Ensures that the position remains as accurate as possible.
+            const size_t iFinePos = (size_t) source->finePosition;
+            source->position += iFinePos;
+            source->finePosition -= (double) iFinePos;
         }
     }
 }
@@ -259,7 +275,7 @@ SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlS
     SlantSource src;
     src.valid = true;
     src.spec = spec;
-    src.speedAdjust = (double) info->spec.sampleRate / (double) ctx->sampleRate;
+    src.speedAdjust = (double) spec.sampleRate / (double) ctx->sampleRate;
     src.channelStride = 0;
 
     // Set the channel stride to the size of the data format in bytes.

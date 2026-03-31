@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     }
 
     SlContextInfo contextInfo;
-    contextInfo.sampleRate = 44100;
+    contextInfo.sampleRate = 48000;
 
     SlContext* context;
     SlResult result = slCreateContext(&contextInfo, &context);

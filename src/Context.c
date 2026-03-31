@@ -1,13 +1,19 @@
 #include "Slant/Context.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
 #define CHECK_CONTEXT(ctx) if (!ctx) return SL_RESULT_INVALID_CONTEXT;
+#define CHECK_BUFFER(ctx, buffer) if (buffer.id > ctx->buffersLength || !ctx->buffers[buffer.id].valid) return SL_RESULT_INVALID_BUFFER;
 
 #define INITIAL_CAPACITY 16
 
 typedef struct
 {
+    // As buffers are never deleted from the buffers list once created (and are instead reused), we must ensure a buffer
+    // is valid before it can be used.
+    bool valid;
     uint8_t* data;
     size_t dataLength;
     // The data capacity and length may not be the same
@@ -79,10 +85,11 @@ void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLengt
 SlResult slContextCreateBuffer(SlContext *context, SlBuffer *buffer)
 {
     CHECK_CONTEXT(context);
-
     SlantContext *ctx = (SlantContext *) context;
 
     SlantBuffer buf;
+    // Buffer must be valid! Other functions will fail if the buffer is not valid.
+    buf.valid = true;
     buf.data = NULL;
     buf.dataLength = 0;
     buf.dataCapacity = 0;
@@ -98,10 +105,44 @@ SlResult slContextCreateBuffer(SlContext *context, SlBuffer *buffer)
         ctx->buffersCapacity = newCapacity;
     }
 
+    // The buffer ID is simply the index in the array of the buffer.
+    // TODO: Buffer reuse
     const size_t id = ctx->buffersLength;
     ctx->buffersLength++;
     ctx->buffers[id] = buf;
 
     buffer->id = id;
+    return SL_RESULT_OK;
+}
+
+SlResult slContextUpdateBuffer(SlContext* context, const SlBuffer buffer, const size_t dataSize, const void* data)
+{
+    CHECK_CONTEXT(context);
+    SlantContext *ctx = (SlantContext *) context;
+
+    CHECK_BUFFER(ctx, buffer);
+
+    SlantBuffer* buf = &ctx->buffers[buffer.id];
+    // Create the buffer's data array if it doesn't exist (if the buffer has not been used)
+    if (!buf->data)
+    {
+        buf->data = (uint8_t *) malloc(dataSize);
+        if (!buf->data)
+            return SL_RESULT_OUT_OF_MEMORY;
+        buf->dataCapacity = dataSize;
+    }
+    // Only resize the data buffer if it is smaller than the incoming data.
+    else if (buf->dataCapacity < dataSize)
+    {
+        uint8_t *reallocBufferData = realloc(buf->data, dataSize);
+        if (!reallocBufferData)
+            return SL_RESULT_OUT_OF_MEMORY;
+        buf->data = reallocBufferData;
+        buf->dataCapacity = dataSize;
+    }
+
+    buf->dataLength = dataSize;
+    memcpy(buf->data, data, dataSize);
+
     return SL_RESULT_OK;
 }

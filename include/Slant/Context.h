@@ -27,6 +27,13 @@ typedef enum
     SL_SOURCE_PCM
 } SlSourceType;
 
+typedef enum
+{
+    SL_STATE_STOPPED,
+    SL_STATE_PAUSED,
+    SL_STATE_PLAYING
+} SlSourceState;
+
 // Information used on context creation.
 typedef struct
 {
@@ -55,6 +62,7 @@ SL_API SlResult slContextUpdateBuffer(SlContext *context, SlBuffer buffer, size_
 
 SL_API SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source);
 SL_API SlResult slContextSourceQueueBuffer(SlContext *context, SlSource source, SlBuffer buffer);
+SL_API SlResult slSourceGetState(SlContext *context, SlSource source, SlSourceState *state);
 
 #ifdef __cplusplus
 }

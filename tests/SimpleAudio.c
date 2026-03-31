@@ -89,7 +89,13 @@ int main(int argc, char **argv)
     SDL_AudioStream* stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, AudioStream, context);
     SDL_ResumeAudioStreamDevice(stream);
 
-    sleep(120);
+    SlSourceState state;
+    slSourceGetState(context, source, &state);
+    while (state == SL_STATE_PLAYING)
+    {
+        sleep(1);
+        slSourceGetState(context, source, &state);
+    }
 
     SDL_DestroyAudioStream(stream);
     SDL_Quit();

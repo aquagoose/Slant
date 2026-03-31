@@ -44,6 +44,9 @@ typedef struct
     size_t queuedBuffersFront;
     size_t queuedBuffersBack;
 
+    // The length of the current buffer, in samples.
+    size_t currentBufferLengthInSamples;
+
     // The current playing state
     bool playing;
 
@@ -193,6 +196,11 @@ void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLengt
             const size_t iFinePos = (size_t) source->finePosition;
             source->position += iFinePos;
             source->finePosition -= (double) iFinePos;
+
+            if (source->position >= source->currentBufferLengthInSamples)
+            {
+                source->playing = false;
+            }
         }
     }
 }
@@ -234,7 +242,6 @@ SlResult slContextUpdateBuffer(SlContext* context, const SlBuffer buffer, const 
 {
     CHECK_CONTEXT(context);
     SlantContext *ctx = (SlantContext *) context;
-
     CHECK_BUFFER(ctx, buffer);
 
     SlantBuffer* buf = &ctx->buffers[buffer.id];
@@ -306,6 +313,8 @@ SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlS
     if (!src.queuedBuffers)
         return SL_RESULT_OUT_OF_MEMORY;
 
+    src.currentBufferLengthInSamples = 0;
+
     src.playing = true;
     src.position = 0;
     src.finePosition = 0.0;
@@ -332,14 +341,33 @@ SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlS
 SlResult slContextSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffer)
 {
     CHECK_CONTEXT(context);
-
     SlantContext *ctx = (SlantContext *) context;
     CHECK_SOURCE(ctx, source);
     CHECK_BUFFER(ctx, buffer);
 
-    SlantSource *src = &ctx->sources[buffer.id];
+    SlantSource *src = &ctx->sources[source.id];
     src->queuedBuffers[src->queuedBuffersBack] = buffer.id;
     src->queuedBuffersBack++;
+    // TODO: This won't work when queueing multiple buffers.
+    src->currentBufferLengthInSamples = ctx->buffers[buffer.id].dataLength / src->sampleStride;
+
+    return SL_RESULT_OK;
+}
+
+SlResult slSourceGetState(SlContext* context, SlSource source, SlSourceState* state)
+{
+    CHECK_CONTEXT(context);
+    SlantContext *ctx = (SlantContext *) context;
+    CHECK_SOURCE(ctx, source);
+
+    const SlantSource *src = &ctx->sources[source.id];
+
+    if (src->playing)
+        *state = SL_STATE_PLAYING;
+    else if (src->position == 0)
+        *state = SL_STATE_STOPPED;
+    else
+        *state = SL_STATE_PAUSED;
 
     return SL_RESULT_OK;
 }

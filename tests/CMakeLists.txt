@@ -1,3 +1,5 @@
+find_package(SDL3 REQUIRED)
+
 message(STATUS "Searching for tests.")
 file(GLOB TEST_C_SRC *.c)
 foreach (file IN LISTS TEST_C_SRC)
@@ -6,4 +8,5 @@ foreach (file IN LISTS TEST_C_SRC)
     message(STATUS "${file} -> ${testname}")
     add_executable(${testname} ${file})
     target_link_libraries(${testname} PRIVATE Slant)
+    target_link_libraries(${testname} PRIVATE SDL3::SDL3)
 endforeach ()

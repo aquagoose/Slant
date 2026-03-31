@@ -5,13 +5,15 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include "Utils/Utils.h"
+
 void AudioStream(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount)
 {
     float buffer[512];
     while (total_amount > 0)
     {
-        for (int i = 0; i < 512; i++)
-            buffer[i] = (float) rand() / (float) RAND_MAX;
+        SlContext *context = (SlContext *) userdata;
+        slContextMixStereoF32(context, buffer, 512);
 
         SDL_PutAudioStreamData(stream, buffer, 512);
         total_amount -= 512;
@@ -20,6 +22,8 @@ void AudioStream(void* userdata, SDL_AudioStream* stream, int additional_amount,
 
 int main(int argc, char **argv)
 {
+    ENSURE_ARGS(1, argc, "Please provide the path to a raw PCM file.");
+
     if (!SDL_Init(SDL_INIT_AUDIO))
     {
         printf("Failed to initialize SDL: %s", SDL_GetError());
@@ -34,6 +38,30 @@ int main(int argc, char **argv)
     if (result != SL_RESULT_OK)
     {
         printf("Failed to create context! %s\n", slResultToString(result));
+        return 1;
+    }
+
+    SlBuffer buffer;
+    result = slContextCreateBuffer(context, &buffer);
+    if (result != SL_RESULT_OK)
+    {
+        printf("Failed to create buffer! %s\n", slResultToString(result));
+        return 1;
+    }
+
+    size_t dataLength;
+    uint8_t* data = LoadFileToBuffer(argv[1], &dataLength);
+    if (!data)
+    {
+        printf("Failed to load file!\n");
+        return 1;
+    }
+
+    result = slContextUpdateBuffer(context, buffer, dataLength, data);
+    free(data);
+    if (result != SL_RESULT_OK)
+    {
+        printf("Failed to update buffer! %s\n", slResultToString(result));
         return 1;
     }
 

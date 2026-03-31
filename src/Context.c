@@ -27,6 +27,11 @@ typedef struct
 {
     bool valid;
     SlAudioSpec spec;
+
+    size_t *queuedBuffers;
+    size_t queuedBuffersCapacity;
+    size_t queuedBuffersTop;
+    size_t queuedBuffersBottom;
 } SlantSource;
 
 typedef struct
@@ -90,7 +95,7 @@ void slDestroyContext(SlContext *context)
 
     for (size_t i = 0; i < ctx->sourcesLength; i++)
     {
-        // TODO: For later
+        free(ctx->sources[i].queuedBuffers);
     }
     free(ctx->sources);
 
@@ -107,6 +112,12 @@ void slDestroyContext(SlContext *context)
 void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLength)
 {
     SlantContext *ctx = (SlantContext *) context;
+
+    for (size_t i = 0; i < bufferLength; i += 2)
+    {
+        buffer[i + 0] = 0.0f;
+        buffer[i + 1] = 0.0f;
+    }
 }
 
 SlResult slContextCreateBuffer(SlContext *context, SlBuffer *buffer)
@@ -142,6 +153,38 @@ SlResult slContextCreateBuffer(SlContext *context, SlBuffer *buffer)
     return SL_RESULT_OK;
 }
 
+SlResult slContextUpdateBuffer(SlContext* context, const SlBuffer buffer, const size_t dataSize, const void* data)
+{
+    CHECK_CONTEXT(context);
+    SlantContext *ctx = (SlantContext *) context;
+
+    CHECK_BUFFER(ctx, buffer);
+
+    SlantBuffer* buf = &ctx->buffers[buffer.id];
+    // Create the buffer's data array if it doesn't exist (if the buffer has not been used)
+    if (!buf->data)
+    {
+        buf->data = (uint8_t *) malloc(dataSize);
+        if (!buf->data)
+            return SL_RESULT_OUT_OF_MEMORY;
+        buf->dataCapacity = dataSize;
+    }
+    // Only resize the data buffer if it is smaller than the incoming data.
+    else if (buf->dataCapacity < dataSize)
+    {
+        uint8_t *reallocBufferData = realloc(buf->data, dataSize);
+        if (!reallocBufferData)
+            return SL_RESULT_OUT_OF_MEMORY;
+        buf->data = reallocBufferData;
+        buf->dataCapacity = dataSize;
+    }
+
+    buf->dataLength = dataSize;
+    memcpy(buf->data, data, dataSize);
+
+    return SL_RESULT_OK;
+}
+
 SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source)
 {
     CHECK_CONTEXT(context);
@@ -173,34 +216,7 @@ SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlS
     return SL_RESULT_OK;
 }
 
-SlResult slContextUpdateBuffer(SlContext* context, const SlBuffer buffer, const size_t dataSize, const void* data)
+SlResult slContextSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffer)
 {
-    CHECK_CONTEXT(context);
-    SlantContext *ctx = (SlantContext *) context;
-
-    CHECK_BUFFER(ctx, buffer);
-
-    SlantBuffer* buf = &ctx->buffers[buffer.id];
-    // Create the buffer's data array if it doesn't exist (if the buffer has not been used)
-    if (!buf->data)
-    {
-        buf->data = (uint8_t *) malloc(dataSize);
-        if (!buf->data)
-            return SL_RESULT_OUT_OF_MEMORY;
-        buf->dataCapacity = dataSize;
-    }
-    // Only resize the data buffer if it is smaller than the incoming data.
-    else if (buf->dataCapacity < dataSize)
-    {
-        uint8_t *reallocBufferData = realloc(buf->data, dataSize);
-        if (!reallocBufferData)
-            return SL_RESULT_OUT_OF_MEMORY;
-        buf->data = reallocBufferData;
-        buf->dataCapacity = dataSize;
-    }
-
-    buf->dataLength = dataSize;
-    memcpy(buf->data, data, dataSize);
-
     return SL_RESULT_OK;
 }

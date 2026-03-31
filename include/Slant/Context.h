@@ -42,7 +42,6 @@ typedef struct
 
 // Create a Slant context.
 SL_API SlResult slCreateContext(const SlContextInfo *info, SlContext **context);
-
 // Destroy a Slant context.
 SL_API void slDestroyContext(SlContext *context);
 
@@ -51,11 +50,11 @@ SL_API void slContextMixStereoF32(SlContext *context, float* buffer, size_t buff
 
 // Create an audio buffer.
 SL_API SlResult slContextCreateBuffer(SlContext *context, SlBuffer *buffer);
-
-SL_API SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source);
-
 // Update an audio buffer's data.
 SL_API SlResult slContextUpdateBuffer(SlContext *context, SlBuffer buffer, size_t dataSize, const void *data);
+
+SL_API SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source);
+SL_API SlResult slContextSourceQueueBuffer(SlContext *context, SlSource source, SlBuffer buffer);
 
 #ifdef __cplusplus
 }

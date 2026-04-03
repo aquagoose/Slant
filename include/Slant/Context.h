@@ -63,6 +63,9 @@ SL_API SlResult slUpdateBuffer(SlContext *context, SlBuffer buffer, size_t dataS
 SL_API SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source);
 SL_API SlResult slSourceQueueBuffer(SlContext *context, SlSource source, SlBuffer buffer);
 SL_API SlResult slSourceGetState(SlContext *context, SlSource source, SlSourceState *state);
+SL_API SlResult slSourcePlay(SlContext *context, SlSource source);
+SL_API SlResult slSourcePause(SlContext *context, SlSource source);
+SL_API SlResult slSourceStop(SlContext *context, SlSource source);
 
 #ifdef __cplusplus
 }

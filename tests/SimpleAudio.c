@@ -80,6 +80,7 @@ int main(int argc, char **argv)
     }
 
     slSourceQueueBuffer(context, source, buffer);
+    slSourcePlay(context, source);
 
     SDL_AudioSpec spec;
     spec.format = SDL_AUDIO_F32;

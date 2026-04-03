@@ -315,7 +315,7 @@ SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *
 
     src.currentBufferLengthInSamples = 0;
 
-    src.playing = true;
+    src.playing = false;
     src.position = 0;
     src.finePosition = 0.0;
 
@@ -341,7 +341,7 @@ SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *
 SlResult slSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffer)
 {
     CHECK_CONTEXT(context);
-    SlantContext *ctx = (SlantContext *) context;
+    const SlantContext *ctx = (SlantContext *) context;
     CHECK_SOURCE(ctx, source);
     CHECK_BUFFER(ctx, buffer);
 
@@ -357,7 +357,7 @@ SlResult slSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffe
 SlResult slSourceGetState(SlContext* context, SlSource source, SlSourceState* state)
 {
     CHECK_CONTEXT(context);
-    SlantContext *ctx = (SlantContext *) context;
+    const SlantContext *ctx = (SlantContext *) context;
     CHECK_SOURCE(ctx, source);
 
     const SlantSource *src = &ctx->sources[source.id];
@@ -368,6 +368,45 @@ SlResult slSourceGetState(SlContext* context, SlSource source, SlSourceState* st
         *state = SL_STATE_STOPPED;
     else
         *state = SL_STATE_PAUSED;
+
+    return SL_RESULT_OK;
+}
+
+SlResult slSourcePlay(SlContext* context, const SlSource source)
+{
+    CHECK_CONTEXT(context);
+    const SlantContext *ctx = (SlantContext *) context;
+    CHECK_SOURCE(ctx, source);
+    SlantSource *src = &ctx->sources[source.id];
+    src->playing = true;
+
+    return SL_RESULT_OK;
+}
+
+SlResult slSourcePause(SlContext* context, const SlSource source)
+{
+    CHECK_CONTEXT(context);
+    const SlantContext *ctx = (SlantContext *) context;
+    CHECK_SOURCE(ctx, source);
+    SlantSource *src = &ctx->sources[source.id];
+    src->playing = false;
+
+    return SL_RESULT_OK;
+}
+
+SlResult slSourceStop(SlContext* context, const SlSource source)
+{
+    CHECK_CONTEXT(context);
+    const SlantContext *ctx = (SlantContext *) context;
+    CHECK_SOURCE(ctx, source);
+    SlantSource *src = &ctx->sources[source.id];
+    src->playing = false;
+
+    // Clear and reset the source.
+    src->position = 0;
+    src->finePosition = 0;
+    src->queuedBuffersBack = 0;
+    src->queuedBuffersFront = 0;
 
     return SL_RESULT_OK;
 }

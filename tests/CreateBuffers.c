@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     }
 
     SlBuffer buffer;
-    result = slContextCreateBuffer(context, &buffer);
+    result = slCreateBuffer(context, &buffer);
     if (result != SL_RESULT_OK)
     {
         printf("Failed to create buffer! %s\n", slResultToString(result));
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    result = slContextUpdateBuffer(context, buffer, dataLength, data);
+    result = slUpdateBuffer(context, buffer, dataLength, data);
     free(data);
     if (result != SL_RESULT_OK)
     {

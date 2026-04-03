@@ -205,7 +205,7 @@ void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLengt
     }
 }
 
-SlResult slContextCreateBuffer(SlContext *context, SlBuffer *buffer)
+SlResult slCreateBuffer(SlContext *context, SlBuffer *buffer)
 {
     CHECK_CONTEXT(context);
     SlantContext *ctx = (SlantContext *) context;
@@ -238,7 +238,7 @@ SlResult slContextCreateBuffer(SlContext *context, SlBuffer *buffer)
     return SL_RESULT_OK;
 }
 
-SlResult slContextUpdateBuffer(SlContext* context, const SlBuffer buffer, const size_t dataSize, const void* data)
+SlResult slUpdateBuffer(SlContext* context, const SlBuffer buffer, const size_t dataSize, const void* data)
 {
     CHECK_CONTEXT(context);
     SlantContext *ctx = (SlantContext *) context;
@@ -269,7 +269,7 @@ SlResult slContextUpdateBuffer(SlContext* context, const SlBuffer buffer, const 
     return SL_RESULT_OK;
 }
 
-SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source)
+SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source)
 {
     CHECK_CONTEXT(context);
     SlantContext *ctx = (SlantContext *) context;
@@ -338,7 +338,7 @@ SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlS
     return SL_RESULT_OK;
 }
 
-SlResult slContextSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffer)
+SlResult slSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffer)
 {
     CHECK_CONTEXT(context);
     SlantContext *ctx = (SlantContext *) context;

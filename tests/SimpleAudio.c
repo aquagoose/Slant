@@ -22,7 +22,7 @@ void AudioStream(void* userdata, SDL_AudioStream* stream, int additional_amount,
 
 int main(int argc, char **argv)
 {
-    ENSURE_ARGS(1, argc, "Please provide the path to a raw PCM file.");
+    ENSURE_ARGS(1, argc, "Please provide the path to a raw 2-channel 16-bit 44.1khz PCM file.");
 
     if (!SDL_Init(SDL_INIT_AUDIO))
     {
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     }
 
     SlBuffer buffer;
-    result = slContextCreateBuffer(context, &buffer);
+    result = slCreateBuffer(context, &buffer);
     if (result != SL_RESULT_OK)
     {
         printf("Failed to create buffer! %s\n", slResultToString(result));
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    result = slContextUpdateBuffer(context, buffer, dataLength, data);
+    result = slUpdateBuffer(context, buffer, dataLength, data);
     free(data);
     if (result != SL_RESULT_OK)
     {
@@ -72,14 +72,14 @@ int main(int argc, char **argv)
     sourceInfo.type = SL_SOURCE_PCM;
 
     SlSource source;
-    result = slContextCreateSource(context, &sourceInfo, &source);
+    result = slCreateSource(context, &sourceInfo, &source);
     if (result != SL_RESULT_OK)
     {
         printf("Failed to create source! %s\n", slResultToString(result));
         return 1;
     }
 
-    slContextSourceQueueBuffer(context, source, buffer);
+    slSourceQueueBuffer(context, source, buffer);
 
     SDL_AudioSpec spec;
     spec.format = SDL_AUDIO_F32;

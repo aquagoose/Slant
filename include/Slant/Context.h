@@ -56,12 +56,12 @@ SL_API void slDestroyContext(SlContext *context);
 SL_API void slContextMixStereoF32(SlContext *context, float* buffer, size_t bufferLength);
 
 // Create an audio buffer.
-SL_API SlResult slContextCreateBuffer(SlContext *context, SlBuffer *buffer);
+SL_API SlResult slCreateBuffer(SlContext *context, SlBuffer *buffer);
 // Update an audio buffer's data.
-SL_API SlResult slContextUpdateBuffer(SlContext *context, SlBuffer buffer, size_t dataSize, const void *data);
+SL_API SlResult slUpdateBuffer(SlContext *context, SlBuffer buffer, size_t dataSize, const void *data);
 
-SL_API SlResult slContextCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source);
-SL_API SlResult slContextSourceQueueBuffer(SlContext *context, SlSource source, SlBuffer buffer);
+SL_API SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source);
+SL_API SlResult slSourceQueueBuffer(SlContext *context, SlSource source, SlBuffer buffer);
 SL_API SlResult slSourceGetState(SlContext *context, SlSource source, SlSourceState *state);
 
 #ifdef __cplusplus

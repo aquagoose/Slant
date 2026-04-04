@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     sourceInfo.spec.dataFormat = SL_FORMAT_I16;
     sourceInfo.spec.sampleRate = 44100;
     sourceInfo.spec.channels = 2;
-    sourceInfo.type = SL_SOURCE_PCM;
+    sourceInfo.type = SL_SOURCE_TYPE_PCM;
 
     SlSource source;
     result = slCreateSource(context, &sourceInfo, &source);
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
     SlSourceState state;
     slSourceGetState(context, source, &state);
-    while (state == SL_STATE_PLAYING)
+    while (state == SL_SOURCE_STATE_PLAYING)
     {
         sleep(1);
         slSourceGetState(context, source, &state);

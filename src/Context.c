@@ -277,7 +277,7 @@ SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *
     CHECK_CONTEXT(context);
     SlantContext *ctx = (SlantContext *) context;
 
-    if (info->type != SL_SOURCE_PCM)
+    if (info->type != SL_SOURCE_TYPE_PCM)
         return SL_RESULT_INVALID_PARAMETER;
 
     SlAudioSpec spec = info->spec;
@@ -369,11 +369,11 @@ SlResult slSourceGetState(SlContext* context, SlSource source, SlSourceState* st
     const SlantSource *src = &ctx->sources[source.id];
 
     if (src->playing)
-        *state = SL_STATE_PLAYING;
+        *state = SL_SOURCE_STATE_PLAYING;
     else if (src->position == 0)
-        *state = SL_STATE_STOPPED;
+        *state = SL_SOURCE_STATE_STOPPED;
     else
-        *state = SL_STATE_PAUSED;
+        *state = SL_SOURCE_STATE_PAUSED;
 
     return SL_RESULT_OK;
 }

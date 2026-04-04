@@ -24,14 +24,14 @@ typedef struct
 
 typedef enum
 {
-    SL_SOURCE_PCM
+    SL_SOURCE_TYPE_PCM
 } SlSourceType;
 
 typedef enum
 {
-    SL_STATE_STOPPED,
-    SL_STATE_PAUSED,
-    SL_STATE_PLAYING
+    SL_SOURCE_STATE_STOPPED,
+    SL_SOURCE_STATE_PAUSED,
+    SL_SOURCE_STATE_PLAYING
 } SlSourceState;
 
 // Information used on context creation.

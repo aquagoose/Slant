@@ -38,6 +38,9 @@ typedef struct
     // Size of one sample in bytes. A sample in Slant includes ALL channels.
     size_t sampleStride;
 
+    float volume;
+    double speed;
+
     // The currently queued buffers to play.
     size_t *queuedBuffers;
     size_t queuedBuffersCapacity;
@@ -187,10 +190,10 @@ void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLengt
                 sampleR = LERP(prevSampleR, sampleR, source->finePosition);
             }
 
-            buffer[i + 0] += sampleL;
-            buffer[i + 1] += sampleR;
+            buffer[i + 0] += sampleL * source->volume;
+            buffer[i + 1] += sampleR * source->volume;
 
-            source->finePosition += source->speedAdjust;
+            source->finePosition += source->speedAdjust * source->speed;
             // Increase the source's position by the integer value of its fine position.
             // Ensures that the position remains as accurate as possible.
             const size_t iFinePos = (size_t) source->finePosition;
@@ -305,6 +308,9 @@ SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *
 
     // The sample stride is the size in bytes of a Slant sample, which includes all channels.
     src.sampleStride = src.channelStride * spec.channels;
+
+    src.volume = 1.0f;
+    src.speed = 1.0;
 
     src.queuedBuffers = (size_t *) malloc(INITIAL_CAPACITY * sizeof(size_t));
     src.queuedBuffersCapacity = INITIAL_CAPACITY;

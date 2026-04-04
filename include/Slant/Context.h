@@ -34,6 +34,20 @@ typedef enum
     SL_SOURCE_STATE_PLAYING
 } SlSourceState;
 
+typedef enum
+{
+    SL_SOURCE_PROPERTY_VOLUME,
+    SL_SOURCE_PROPERTY_SPEED,
+    SL_SOURCE_PROPERTY_STATE,
+    SL_SOURCE_PROPERTY_INTERPOLATION_TYPE
+} SlSourceProperty;
+
+typedef enum
+{
+    SL_INTERPOLATION_TYPE_NONE,
+    SL_INTERPOLATION_TYPE_LINEAR
+} SlInterpolationType;
+
 // Information used on context creation.
 typedef struct
 {
@@ -61,8 +75,18 @@ SL_API SlResult slCreateBuffer(SlContext *context, SlBuffer *buffer);
 SL_API SlResult slUpdateBuffer(SlContext *context, SlBuffer buffer, size_t dataSize, const void *data);
 
 SL_API SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source);
+
+SL_API SlResult slGetSourcePropertyd(SlContext *context, SlSource source, SlSourceProperty property, double *value);
+SL_API SlResult slGetSourcePropertyf(SlContext *context, SlSource source, SlSourceProperty property, float *value);
+SL_API SlResult slGetSourcePropertyi(SlContext *context, SlSource source, SlSourceProperty property, int *value);
+
 SL_API SlResult slSourceQueueBuffer(SlContext *context, SlSource source, SlBuffer buffer);
-SL_API SlResult slSourceGetState(SlContext *context, SlSource source, SlSourceState *state);
+
+SL_API SlResult slSourceGetState(SlContext *context, SlSource source, SlSourceState *state)
+{
+    return slGetSourcePropertyi(context, source, SL_SOURCE_PROPERTY_STATE, (int *) state);
+}
+
 SL_API SlResult slSourcePlay(SlContext *context, SlSource source);
 SL_API SlResult slSourcePause(SlContext *context, SlSource source);
 SL_API SlResult slSourceStop(SlContext *context, SlSource source);

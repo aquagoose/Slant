@@ -344,6 +344,75 @@ SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *
     return SL_RESULT_OK;
 }
 
+SlResult slGetSourcePropertyd(SlContext* context, SlSource source, SlSourceProperty property, double* value)
+{
+    CHECK_CONTEXT(context);
+    const SlantContext *ctx = (SlantContext *) context;
+    CHECK_SOURCE(ctx, source);
+    const SlantSource *src = &ctx->sources[source.id];
+
+    switch (property)
+    {
+        case SL_SOURCE_PROPERTY_SPEED:
+            *value = src->speed;
+            break;
+        default:
+            return SL_RESULT_INVALID_PARAMETER;
+    }
+
+    return SL_RESULT_OK;
+}
+
+SlResult slGetSourcePropertyf(SlContext* context, SlSource source, SlSourceProperty property, float *value)
+{
+    CHECK_CONTEXT(context);
+    const SlantContext *ctx = (SlantContext *) context;
+    CHECK_SOURCE(ctx, source);
+    const SlantSource *src = &ctx->sources[source.id];
+
+    switch (property)
+    {
+        case SL_SOURCE_PROPERTY_VOLUME:
+            *value = src->volume;
+            break;
+        default:
+            return SL_RESULT_INVALID_PARAMETER;
+    }
+
+    return SL_RESULT_OK;
+}
+
+SlResult slGetSourcePropertyi(SlContext* context, SlSource source, SlSourceProperty property, int* value)
+{
+    CHECK_CONTEXT(context);
+    const SlantContext *ctx = (SlantContext *) context;
+    CHECK_SOURCE(ctx, source);
+    const SlantSource *src = &ctx->sources[source.id];
+
+    switch (property)
+    {
+        case SL_SOURCE_PROPERTY_STATE:
+        {
+            if (src->playing)
+                *value = (int) SL_SOURCE_STATE_PLAYING;
+            else if (src->position == 0)
+                *value = (int) SL_SOURCE_STATE_STOPPED;
+            else
+                *value = (int) SL_SOURCE_STATE_PAUSED;
+            break;
+        }
+        case SL_SOURCE_PROPERTY_INTERPOLATION_TYPE:
+        {
+            *value = (int) SL_INTERPOLATION_TYPE_LINEAR;
+            break;
+        }
+        default:
+            return SL_RESULT_INVALID_PARAMETER;
+    }
+
+    return SL_RESULT_OK;
+}
+
 SlResult slSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffer)
 {
     CHECK_CONTEXT(context);
@@ -356,24 +425,6 @@ SlResult slSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffe
     src->queuedBuffersBack++;
     // TODO: This won't work when queueing multiple buffers.
     src->currentBufferLengthInSamples = ctx->buffers[buffer.id].dataLength / src->sampleStride;
-
-    return SL_RESULT_OK;
-}
-
-SlResult slSourceGetState(SlContext* context, SlSource source, SlSourceState* state)
-{
-    CHECK_CONTEXT(context);
-    const SlantContext *ctx = (SlantContext *) context;
-    CHECK_SOURCE(ctx, source);
-
-    const SlantSource *src = &ctx->sources[source.id];
-
-    if (src->playing)
-        *state = SL_SOURCE_STATE_PLAYING;
-    else if (src->position == 0)
-        *state = SL_SOURCE_STATE_STOPPED;
-    else
-        *state = SL_SOURCE_STATE_PAUSED;
 
     return SL_RESULT_OK;
 }

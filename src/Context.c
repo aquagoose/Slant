@@ -40,6 +40,7 @@ typedef struct
 
     float volume;
     double speed;
+    SlInterpolationType interpolation;
 
     // The currently queued buffers to play.
     size_t *queuedBuffers;
@@ -181,13 +182,21 @@ void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLengt
             float sampleL = GetSample(spec->dataFormat, bytePos, buf->data);
             float sampleR = GetSample(spec->dataFormat, bytePos + source->channelStride, buf->data);
 
-            // Linear interpolation
+            switch (source->interpolation)
             {
-                const size_t prevPos = source->position == 0 ? 0 : ((source->position - 1) * source->sampleStride);
-                const float prevSampleL = GetSample(spec->dataFormat, prevPos, buf->data);
-                const float prevSampleR = GetSample(spec->dataFormat, prevPos + source->channelStride, buf->data);
-                sampleL = LERP(prevSampleL, sampleL, source->finePosition);
-                sampleR = LERP(prevSampleR, sampleR, source->finePosition);
+                case SL_INTERPOLATION_TYPE_LINEAR:
+                {
+                    const size_t prevPos = source->position == 0 ? 0 : ((source->position - 1) * source->sampleStride);
+                    const float prevSampleL = GetSample(spec->dataFormat, prevPos, buf->data);
+                    const float prevSampleR = GetSample(spec->dataFormat, prevPos + source->channelStride, buf->data);
+                    sampleL = LERP(prevSampleL, sampleL, source->finePosition);
+                    sampleR = LERP(prevSampleR, sampleR, source->finePosition);
+                    break;
+                }
+                // If there is an unrecognized interpolation type, simply don't perform interpolation. This also handles
+                // the SL_INTERPOLATION_TYPE_NONE case.
+                default:
+                    break;
             }
 
             buffer[i + 0] += sampleL * source->volume;
@@ -311,6 +320,7 @@ SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *
 
     src.volume = 1.0f;
     src.speed = 1.0;
+    src.interpolation = SL_INTERPOLATION_TYPE_LINEAR;
 
     src.queuedBuffers = (size_t *) malloc(INITIAL_CAPACITY * sizeof(size_t));
     src.queuedBuffersCapacity = INITIAL_CAPACITY;
@@ -344,7 +354,7 @@ SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *
     return SL_RESULT_OK;
 }
 
-SlResult slGetSourcePropertyd(SlContext* context, SlSource source, SlSourceProperty property, double* value)
+SlResult slSourceGetPropertyf(SlContext* context, SlSource source, SlSourceProperty property, float *value)
 {
     CHECK_CONTEXT(context);
     const SlantContext *ctx = (SlantContext *) context;
@@ -354,24 +364,8 @@ SlResult slGetSourcePropertyd(SlContext* context, SlSource source, SlSourcePrope
     switch (property)
     {
         case SL_SOURCE_PROPERTY_SPEED:
-            *value = src->speed;
+            *value = (float) src->speed;
             break;
-        default:
-            return SL_RESULT_INVALID_PARAMETER;
-    }
-
-    return SL_RESULT_OK;
-}
-
-SlResult slGetSourcePropertyf(SlContext* context, SlSource source, SlSourceProperty property, float *value)
-{
-    CHECK_CONTEXT(context);
-    const SlantContext *ctx = (SlantContext *) context;
-    CHECK_SOURCE(ctx, source);
-    const SlantSource *src = &ctx->sources[source.id];
-
-    switch (property)
-    {
         case SL_SOURCE_PROPERTY_VOLUME:
             *value = src->volume;
             break;
@@ -382,7 +376,7 @@ SlResult slGetSourcePropertyf(SlContext* context, SlSource source, SlSourcePrope
     return SL_RESULT_OK;
 }
 
-SlResult slGetSourcePropertyi(SlContext* context, SlSource source, SlSourceProperty property, int* value)
+SlResult slSourceGetPropertyi(SlContext* context, SlSource source, SlSourceProperty property, int* value)
 {
     CHECK_CONTEXT(context);
     const SlantContext *ctx = (SlantContext *) context;
@@ -413,6 +407,71 @@ SlResult slGetSourcePropertyi(SlContext* context, SlSource source, SlSourcePrope
     return SL_RESULT_OK;
 }
 
+SlResult slSourceSetPropertyf(SlContext* context, SlSource source, SlSourceProperty property, float value)
+{
+    CHECK_CONTEXT(context);
+    const SlantContext *ctx = (SlantContext *) context;
+    CHECK_SOURCE(ctx, source);
+    SlantSource *src = &ctx->sources[source.id];
+
+    switch (property)
+    {
+        case SL_SOURCE_PROPERTY_SPEED:
+            src->speed = (double) value;
+            break;
+        case SL_SOURCE_PROPERTY_VOLUME:
+            src->volume = value;
+            break;
+        default:
+            return SL_RESULT_INVALID_PARAMETER;
+    }
+
+    return SL_RESULT_OK;
+}
+
+SlResult slSourceSetPropertyi(SlContext* context, SlSource source, SlSourceProperty property, int value)
+{
+    CHECK_CONTEXT(context);
+    const SlantContext *ctx = (SlantContext *) context;
+    CHECK_SOURCE(ctx, source);
+    SlantSource *src = &ctx->sources[source.id];
+
+    switch (property)
+    {
+        case SL_SOURCE_PROPERTY_STATE:
+        {
+            switch ((SlSourceState) value)
+            {
+                case SL_SOURCE_STATE_STOPPED:
+                    src->playing = false;
+                    // Clear and reset the source.
+                    src->position = 0;
+                    src->finePosition = 0;
+                    src->queuedBuffersBack = 0;
+                    src->queuedBuffersFront = 0;
+                    break;
+                case SL_SOURCE_STATE_PAUSED:
+                    src->playing = false;
+                    break;
+                case SL_SOURCE_STATE_PLAYING:
+                    src->playing = true;
+                    break;
+                default:
+                    return SL_RESULT_INVALID_PARAMETER;
+            }
+            break;
+        }
+        case SL_SOURCE_PROPERTY_INTERPOLATION_TYPE:
+            src->interpolation = (SlInterpolationType) value;
+            break;
+
+        default:
+            return SL_RESULT_INVALID_PARAMETER;
+    }
+
+    return SL_RESULT_OK;
+}
+
 SlResult slSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffer)
 {
     CHECK_CONTEXT(context);
@@ -425,45 +484,6 @@ SlResult slSourceQueueBuffer(SlContext* context, SlSource source, SlBuffer buffe
     src->queuedBuffersBack++;
     // TODO: This won't work when queueing multiple buffers.
     src->currentBufferLengthInSamples = ctx->buffers[buffer.id].dataLength / src->sampleStride;
-
-    return SL_RESULT_OK;
-}
-
-SlResult slSourcePlay(SlContext* context, const SlSource source)
-{
-    CHECK_CONTEXT(context);
-    const SlantContext *ctx = (SlantContext *) context;
-    CHECK_SOURCE(ctx, source);
-    SlantSource *src = &ctx->sources[source.id];
-    src->playing = true;
-
-    return SL_RESULT_OK;
-}
-
-SlResult slSourcePause(SlContext* context, const SlSource source)
-{
-    CHECK_CONTEXT(context);
-    const SlantContext *ctx = (SlantContext *) context;
-    CHECK_SOURCE(ctx, source);
-    SlantSource *src = &ctx->sources[source.id];
-    src->playing = false;
-
-    return SL_RESULT_OK;
-}
-
-SlResult slSourceStop(SlContext* context, const SlSource source)
-{
-    CHECK_CONTEXT(context);
-    const SlantContext *ctx = (SlantContext *) context;
-    CHECK_SOURCE(ctx, source);
-    SlantSource *src = &ctx->sources[source.id];
-    src->playing = false;
-
-    // Clear and reset the source.
-    src->position = 0;
-    src->finePosition = 0;
-    src->queuedBuffersBack = 0;
-    src->queuedBuffersFront = 0;
 
     return SL_RESULT_OK;
 }

@@ -80,6 +80,8 @@ int main(int argc, char **argv)
     }
 
     slSourceQueueBuffer(context, source, buffer);
+    //slSourceSetPropertyi(context, source, SL_SOURCE_PROPERTY_INTERPOLATION_TYPE, SL_INTERPOLATION_TYPE_NONE);
+    //slSourceSetPropertyf(context, source, SL_SOURCE_PROPERTY_SPEED, 0.5f);
     slSourcePlay(context, source);
 
     SDL_AudioSpec spec;

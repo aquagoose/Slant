@@ -76,20 +76,33 @@ SL_API SlResult slUpdateBuffer(SlContext *context, SlBuffer buffer, size_t dataS
 
 SL_API SlResult slCreateSource(SlContext *context, const SlSourceInfo *info, SlSource *source);
 
-SL_API SlResult slGetSourcePropertyd(SlContext *context, SlSource source, SlSourceProperty property, double *value);
-SL_API SlResult slGetSourcePropertyf(SlContext *context, SlSource source, SlSourceProperty property, float *value);
-SL_API SlResult slGetSourcePropertyi(SlContext *context, SlSource source, SlSourceProperty property, int *value);
+SL_API SlResult slSourceGetPropertyf(SlContext *context, SlSource source, SlSourceProperty property, float *value);
+SL_API SlResult slSourceGetPropertyi(SlContext *context, SlSource source, SlSourceProperty property, int *value);
+
+SL_API SlResult slSourceSetPropertyf(SlContext *context, SlSource source, SlSourceProperty property, float value);
+SL_API SlResult slSourceSetPropertyi(SlContext *context, SlSource source, SlSourceProperty property, int value);
 
 SL_API SlResult slSourceQueueBuffer(SlContext *context, SlSource source, SlBuffer buffer);
 
 SL_API SlResult slSourceGetState(SlContext *context, SlSource source, SlSourceState *state)
 {
-    return slGetSourcePropertyi(context, source, SL_SOURCE_PROPERTY_STATE, (int *) state);
+    return slSourceGetPropertyi(context, source, SL_SOURCE_PROPERTY_STATE, (int *) state);
 }
 
-SL_API SlResult slSourcePlay(SlContext *context, SlSource source);
-SL_API SlResult slSourcePause(SlContext *context, SlSource source);
-SL_API SlResult slSourceStop(SlContext *context, SlSource source);
+SL_API SlResult slSourcePlay(SlContext *context, SlSource source)
+{
+    return slSourceSetPropertyi(context, source, SL_SOURCE_PROPERTY_STATE, SL_SOURCE_STATE_PLAYING);
+}
+
+SL_API SlResult slSourcePause(SlContext *context, SlSource source)
+{
+    return slSourceSetPropertyi(context, source, SL_SOURCE_PROPERTY_STATE, SL_SOURCE_STATE_PAUSED);
+}
+
+SL_API SlResult slSourceStop(SlContext *context, SlSource source)
+{
+    return slSourceSetPropertyi(context, source, SL_SOURCE_PROPERTY_STATE, SL_SOURCE_STATE_STOPPED);
+}
 
 #ifdef __cplusplus
 }

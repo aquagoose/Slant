@@ -11,6 +11,7 @@
 #define CHECK_SOURCE(ctx, source) if (source.id > ctx->sourcesLength || !ctx->sources[source.id].valid) return SL_RESULT_INVALID_SOURCE;
 
 #define LERP(a, b, amount) (amount * (b - a)) + a;
+#define CLAMP(value, min, max) value < min ? min : value > max ? max : value;
 
 typedef struct
 {
@@ -199,8 +200,8 @@ void slContextMixStereoF32(SlContext *context, float *buffer, size_t bufferLengt
                     break;
             }
 
-            buffer[i + 0] += sampleL * source->volume;
-            buffer[i + 1] += sampleR * source->volume;
+            buffer[i + 0] = CLAMP(buffer[i + 0] + sampleL * source->volume, -1.0f, 1.0f);
+            buffer[i + 1] = CLAMP(buffer[i + 1] + sampleR * source->volume, -1.0f, 1.0f);
 
             source->finePosition += source->speedAdjust * source->speed;
             // Increase the source's position by the integer value of its fine position.
@@ -397,7 +398,7 @@ SlResult slSourceGetPropertyi(SlContext* context, SlSource source, SlSourcePrope
         }
         case SL_SOURCE_PROPERTY_INTERPOLATION_TYPE:
         {
-            *value = (int) SL_INTERPOLATION_TYPE_LINEAR;
+            *value = (int) src->interpolation;
             break;
         }
         default:

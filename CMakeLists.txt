@@ -26,7 +26,7 @@ elseif (LINUX)
     list(APPEND MIXR++_SRC src/mixr++/Device/AlsaDevice.h src/mixr++/Device/AlsaDevice.cpp)
 endif()
 
-add_library(mixr++ SHARED ${MIXR++_SRC})
+add_library(mixr++ STATIC ${MIXR++_SRC})
 target_include_directories(mixr++ PUBLIC include/)
 target_include_directories(mixr++ PRIVATE src/Impl)
 

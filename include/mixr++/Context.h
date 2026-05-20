@@ -28,6 +28,8 @@ namespace mixr {
         void SetMasterVolume(float volume);
 
         void MixToStereoF32Buffer(float* buffer, size_t length);
+        
+        Impl* GetImpl() { return _impl.get(); }
     };
 
 }

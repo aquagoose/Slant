@@ -187,7 +187,7 @@ void mxCreateDevice(uint32_t sampleRate, MxDevice** pDevice)
 void mxDeviceGetContext(MxDevice* device, MxContext** pContext)
 {
     auto mxDevice = (AudioDevice*) device;
-    *pContext = (MxContext*) mxDevice->Context();
+    *pContext = (MxContext*) mxDevice->Context()->GetImpl();
 }
 
 void mxDestroyDevice(MxDevice* device)

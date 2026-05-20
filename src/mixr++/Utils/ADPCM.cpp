@@ -1,5 +1,5 @@
 #include <iostream>
-#include "mixr/Utils/ADPCM.h"
+#include "mixr++/Utils/ADPCM.h"
 
 inline int Clamp(int value, int min, int max) {
     return value <= min ? min : value >= max ? max : value;

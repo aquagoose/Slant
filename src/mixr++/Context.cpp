@@ -1,7 +1,7 @@
-#include "mixr/Context.h"
-#include "mixr/AudioBuffer.h"
-#include "mixr/AudioSource.h"
-#include "Impl/Impl.h"
+#include "mixr++/Context.h"
+#include "mixr++/AudioBuffer.h"
+#include "mixr++/AudioSource.h"
+#include "Impl.h"
 
 namespace mixr {
     Context::Context(uint32_t sampleRate) {

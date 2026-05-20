@@ -1,4 +1,4 @@
-#include "mixr/Stream/Wav.hpp"
+#include "mixr++/Stream/Wav.h"
 #include "StringUtils.h"
 
 #include <stdexcept>

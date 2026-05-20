@@ -1,7 +1,7 @@
-#include "mixr/mixr.h"
+#include "mixr++/mixr.h"
 
 #include "../Impl/Impl.h"
-#include "mixr/AudioDevice.h"
+#include "mixr++/AudioDevice.h"
 
 using namespace mixr;
 

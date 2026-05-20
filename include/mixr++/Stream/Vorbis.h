@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AudioStream.hpp"
+#include "AudioStream.h"
 
 #include <string>
 #include <iostream>

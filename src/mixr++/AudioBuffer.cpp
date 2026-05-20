@@ -1,5 +1,5 @@
-#include "mixr/AudioBuffer.h"
-#include "Impl/Impl.h"
+#include "mixr++/AudioBuffer.h"
+#include "Impl.h"
 
 namespace mixr {
     AudioBuffer::AudioBuffer(size_t id, Impl* impl) {

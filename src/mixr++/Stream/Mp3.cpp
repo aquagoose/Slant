@@ -1,6 +1,6 @@
 #define MINIMP3_IMPLEMENTATION
 
-#include "mixr/Stream/Mp3.hpp"
+#include "mixr++/Stream/Mp3.h"
 #include "StringUtils.h"
 
 #include <stdexcept>

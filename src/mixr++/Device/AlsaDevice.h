@@ -2,7 +2,7 @@
 
 #include <alsa/asoundlib.h>
 
-#include "../../include/mixr/AudioDevice.h"
+#include "../../include/mixr++/AudioDevice.h"
 
 namespace mixr::Device
 {

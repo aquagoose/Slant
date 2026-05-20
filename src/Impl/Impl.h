@@ -5,10 +5,10 @@
 #include <deque>
 #include <mutex>
 
-#include "mixr/Context.h"
-#include "mixr/Common.h"
+#include "mixr++/Context.h"
+#include "mixr++/Common.h"
 
-#include "mixr/Utils/ADPCM.h"
+#include "mixr++/Utils/ADPCM.h"
 
 namespace mixr {
 

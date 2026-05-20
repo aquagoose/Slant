@@ -1,27 +1,23 @@
 #pragma once
 
-#include "AudioStream.hpp"
+#include "AudioStream.h"
 
+#include <FLAC++/decoder.h>
+#include <memory>
 #include <string>
-
-#include <minimp3_ex.h>
 
 namespace mixr::Stream {
 
-    class MIXR_CPP_API Mp3 : public AudioStream {
+    class MIXR_CPP_API Flac : public AudioStream {
     private:
-        mp3dec_ex_t _mp3;
-
-        AudioFormat _format;
-        size_t _lengthInSamples;
+        std::unique_ptr<FLAC::Decoder::File> _file;
 
     public:
-        explicit Mp3(const std::string& path);
-        ~Mp3() override;
+        explicit Flac(const std::string& path);
 
         AudioFormat Format() override;
 
-        size_t GetBuffer(uint8_t* buffer, size_t bufferLength) override;
+        size_t GetBuffer(uint8_t *buffer, size_t bufferLength) override;
 
         void Restart() override;
         void SeekToSample(size_t sample) override;
@@ -29,7 +25,6 @@ namespace mixr::Stream {
         size_t PositionInSamples() override;
 
         size_t LengthInSamples() override;
-
         std::vector<uint8_t> GetPCM() override;
     };
 

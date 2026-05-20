@@ -1,6 +1,6 @@
-#include "mixr/Stream/Vorbis.h"
+#include "mixr++/Stream/Vorbis.h"
 
-#include "mixr/Stream/Vorbis.hpp"
+#include "mixr++/Stream/Vorbis.hpp"
 
 using namespace mixr::Stream;
 

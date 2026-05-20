@@ -1,5 +1,5 @@
-#include "mixr/AudioDevice.h"
-#include "Impl/Impl.h"
+#include "mixr++/AudioDevice.h"
+#include "Impl.h"
 
 #if defined(_WIN32)
 #include "Device/SdlDevice.h"

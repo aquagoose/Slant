@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 
-#include "AudioStream.hpp"
+#include "AudioStream.h"
 #include "../Common.h"
 
 namespace mixr::Stream {

@@ -1,4 +1,4 @@
-#include "mixr/Stream/Vorbis.hpp"
+#include "mixr++/Stream/Vorbis.h"
 #include "StringUtils.h"
 
 #include <stdexcept>

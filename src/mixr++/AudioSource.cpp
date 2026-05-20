@@ -1,6 +1,6 @@
-#include "mixr/AudioSource.h"
-#include "mixr/AudioBuffer.h"
-#include "Impl/Impl.h"
+#include "mixr++/AudioSource.h"
+#include "mixr++/AudioBuffer.h"
+#include "Impl.h"
 
 namespace mixr {
     AudioSource::AudioSource(size_t id, Impl* impl) {

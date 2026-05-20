@@ -1,4 +1,4 @@
-#include "mixr/Stream/Flac.hpp"
+#include "mixr++/Stream/Flac.h"
 
 #include <iostream>
 #include <stdexcept>

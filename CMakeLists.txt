@@ -3,6 +3,7 @@ project(mixr)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 file(GLOB MIXR++_SRC CONFIGURE_DEPENDS
         include/mixr++/*.h
@@ -25,11 +26,9 @@ elseif (LINUX)
     list(APPEND MIXR++_SRC src/mixr++/Device/AlsaDevice.h src/mixr++/Device/AlsaDevice.cpp)
 endif()
 
-add_library(mixr++ STATIC ${MIXR++_SRC})
-
+add_library(mixr++ SHARED ${MIXR++_SRC})
 target_include_directories(mixr++ PUBLIC include/)
 target_include_directories(mixr++ PRIVATE src/Impl)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if (WIN32)
     add_subdirectory(lib/SDL)
@@ -51,7 +50,17 @@ target_link_libraries(mixr++ PUBLIC FLAC::FLAC++)
 
 target_include_directories(mixr++ PUBLIC lib/minimp3)
 
+file(GLOB MIXR_SRC CONFIGURE_DEPENDS
+        include/mixr/*.h
+        include/mixr/Stream/*.h
+        src/mixr/*.h
+        src/mixr/*.cpp
+)
 
+add_library(mixr SHARED ${MIXR_SRC})
+target_include_directories(mixr PUBLIC include/)
+target_include_directories(mixr PRIVATE src/Impl)
+target_link_libraries(mixr PUBLIC mixr++)
 
 if (MSVC)
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2")
@@ -64,5 +73,8 @@ else()
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s")
 endif ()
 
-add_executable(mixrtest tests/main.cpp)
-target_link_libraries(mixrtest PRIVATE mixr++)
+add_executable(test_mixr++ tests/test_mixr++.cpp)
+target_link_libraries(test_mixr++ PRIVATE mixr++)
+
+add_executable(test_mixr tests/test_mixr.c)
+target_link_libraries(test_mixr PRIVATE mixr)

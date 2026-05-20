@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #ifdef _WIN32
 #define MIXR_C_API __declspec(dllexport)

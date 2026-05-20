@@ -1,6 +1,6 @@
+#include "mixr/Stream/AudioStream.h"
+#include "mixr/Stream/Flac.h"
 #include "mixr++/Stream/Flac.h"
-
-#include "mixr++/Stream/Flac.hpp"
 
 using namespace mixr::Stream;
 

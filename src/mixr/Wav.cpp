@@ -1,6 +1,6 @@
+#include "mixr/Stream/AudioStream.h"
+#include "mixr/Stream/Wav.h"
 #include "mixr++/Stream/Wav.h"
-
-#include "mixr++/Stream/Wav.hpp"
 
 using namespace mixr::Stream;
 

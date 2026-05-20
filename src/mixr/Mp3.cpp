@@ -1,6 +1,6 @@
+#include "mixr/Stream/AudioStream.h"
+#include "mixr/Stream/Mp3.h"
 #include "mixr++/Stream/Mp3.h"
-
-#include "mixr++/Stream/Mp3.hpp"
 
 using namespace mixr::Stream;
 

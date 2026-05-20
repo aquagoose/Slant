@@ -4,12 +4,6 @@
 #include <mixr++/Stream/Vorbis.h>
 #include <mixr++/Stream/Mp3.h>
 
-/*#include <mixr++/mixr.h>
-#include <mixr++/Stream/Wav.h>
-#include <mixr++/Stream/Flac.h>
-#include <mixr++/Stream/Vorbis.h>
-#include <mixr++/Stream/Mp3.h>*/
-
 #include <thread>
 #include <iostream>
 
@@ -23,7 +17,8 @@ struct CallbackData {
     int CurrentBuffer;
 };
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
     if (argc < 2) {
         std::cout << "Please enter filename as argument" << std::endl;
         return 1;
@@ -115,95 +110,13 @@ int main(int argc, char* argv[]) {
     //source->SetPanning(1.0);
     source->Play();
 
-    /*MxAudioStream* stream;
-    mxStreamLoadMp3(argv[1], &stream);
-
-    MxAudioFormat format = mxStreamGetFormat(stream);
-
-    uint8_t* data;
-    size_t dataLength;
-    mxStreamGetPCM(stream, nullptr, &dataLength);
-    data = new uint8_t[dataLength];
-    mxStreamGetPCM(stream, data, &dataLength);
-
-    MxDevice* device;
-    MxContext* context;
-    mxCreateSDLDevice(48000, 512, &device);
-    mxDeviceGetContext(device, &context);
-
-    //mxContextSetMasterVolume(context, 0.1f);
-
-    MxSourceDescription description {
-        MX_SOURCE_TYPE_PCM,
-        format,
-    };
-
-    //if (mxWavIsADPCM(stream)) {
-    //    MxADPCMInfo adpcm = mxWavGetADPCMInfo(stream);
-
-    //    description.Type = MX_SOURCE_TYPE_ADPCM;
-    //    description.ADPCM = { .ChunkSize = adpcm.ChunkSize };
-    //}
-
-    mxDestroyStream(stream);
-
-    MxAudioBuffer buffer = mxContextCreateBuffer(context, data, dataLength);
-
-    MxAudioSource source = mxContextCreateSource(context, &description);
-    mxSourceSubmitBuffer(context, source, buffer);
-
-    //mxSourceSetSpeed(context, source, 2.0);
-    //mxSourceSetVolume(context, source, 0.5f);
-    mxSourceSetLooping(context, source, true);
-    //mxSourceSetPanning(context, source, -1.0f);
-
-    mxSourcePlay(context, source);*/
-
     int value = 0;
 
-    while (source->State() != SourceState::Stopped) {
-    //while (mxSourceGetState(context, source) != MX_SOURCE_STATE_STOPPED) {
+    while (source->State() != SourceState::Stopped)
+        {
         std::this_thread::sleep_for(std::chrono::seconds(1));
-
         std::cout << cbData->Stream->PositionInSamples() << std::endl;
-
-        /*value++;
-
-        if (value >= 5 && value < 10) {
-            source->Pause();
-        }
-
-        if (value >= 10) {
-            source->Play();
-        }*/
-
-        //std::cout << buffer->ID() << std::endl;
-        //buffer.reset();
-
-        //buffer = context->CreateBuffer(data.data(), data.size());
-        //source->SubmitBuffer(buffer.get());
-        //source->Play();
-
-        /*std::cout << source->ID() << std::endl;
-        source.reset();
-
-        source = context->CreateSource(description);
-        source->SubmitBuffer(buffer.get());
-        source->Play();*/
-
-        //source->Stop();
-        //source->Play();
-
-        /*if (test) {
-            source->Play();
-        } else {
-            source->Pause();
-        }
-
-        test = !test;*/
     }
-
-    //mxDestroyDevice(device);
 
     return 0;
 }

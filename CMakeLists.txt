@@ -57,10 +57,10 @@ file(GLOB SLANT_SRC CONFIGURE_DEPENDS
         src/Slant/*.cpp
 )
 
-add_library(Slant SHARED ${SLANT_SRC})
-target_include_directories(Slant PUBLIC include/)
-target_include_directories(Slant PRIVATE src/Impl)
-target_link_libraries(Slant PUBLIC Slant++)
+add_library(slant SHARED ${SLANT_SRC})
+target_include_directories(slant PUBLIC include/)
+target_include_directories(slant PRIVATE src/Impl)
+target_link_libraries(slant PUBLIC Slant++)
 
 if (MSVC)
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2")
@@ -77,4 +77,4 @@ add_executable(test_slant++ tests/test_slant++.cpp)
 target_link_libraries(test_slant++ PRIVATE Slant++)
 
 add_executable(test_slant tests/test_slant.c)
-target_link_libraries(test_slant PRIVATE Slant)
+target_link_libraries(test_slant PRIVATE slant)

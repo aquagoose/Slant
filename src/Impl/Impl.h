@@ -5,12 +5,12 @@
 #include <deque>
 #include <mutex>
 
-#include "mixr++/Context.h"
-#include "mixr++/Common.h"
+#include "Slant++/Context.h"
+#include "Slant++/Common.h"
 
-#include "mixr++/Utils/ADPCM.h"
+#include "Slant++/Utils/ADPCM.h"
 
-namespace mixr {
+namespace Slant {
 
     struct Buffer {
         std::vector<uint8_t> Data;

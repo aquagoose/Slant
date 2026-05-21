@@ -1,80 +1,80 @@
 cmake_minimum_required(VERSION 3.20)
-project(mixr)
+project(Slant)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-file(GLOB MIXR++_SRC CONFIGURE_DEPENDS
-        include/mixr++/*.h
-        include/mixr++/Utils/*.h
-        include/mixr++/Stream/*.h
-        src/mixr++/*.h
-        src/mixr++/*.cpp
-        src/mixr++/Stream/*.h
-        src/mixr++/Stream/*.cpp
-        src/mixr++/Utils/*.h
-        src/mixr++/Utils/*.cpp
+file(GLOB SLANT++_SRC CONFIGURE_DEPENDS
+        include/Slant++/*.h
+        include/Slant++/Utils/*.h
+        include/Slant++/Stream/*.h
+        src/Slant++/*.h
+        src/Slant++/*.cpp
+        src/Slant++/Stream/*.h
+        src/Slant++/Stream/*.cpp
+        src/Slant++/Utils/*.h
+        src/Slant++/Utils/*.cpp
         
         src/Impl/*.h
         src/Impl/*.cpp
 )
 
 if (WIN32)
-    list(APPEND MIXR++_SRC src/mixr++/Device/SdlDevice.h src/mixr++/Device/SdlDevice.cpp)
+    list(APPEND SLANT++_SRC src/Slant++/Device/SdlDevice.h src/Slant++/Device/SdlDevice.cpp)
 elseif (LINUX)
-    list(APPEND MIXR++_SRC src/mixr++/Device/AlsaDevice.h src/mixr++/Device/AlsaDevice.cpp)
+    list(APPEND SLANT++_SRC src/Slant++/Device/AlsaDevice.h src/Slant++/Device/AlsaDevice.cpp)
 endif()
 
-add_library(mixr++ STATIC ${MIXR++_SRC})
-target_include_directories(mixr++ PUBLIC include/)
-target_include_directories(mixr++ PRIVATE src/Impl)
+add_library(Slant++ STATIC ${SLANT++_SRC})
+target_include_directories(Slant++ PUBLIC include/)
+target_include_directories(Slant++ PRIVATE src/Impl)
 
 if (WIN32)
     add_subdirectory(lib/SDL)
-    target_link_libraries(mixr++ PUBLIC SDL2::SDL2-static)
+    target_link_libraries(Slant++ PUBLIC SDL2::SDL2-static)
 endif ()
 
 add_subdirectory(lib/stb)
-target_link_libraries(mixr++ PUBLIC stb)
+target_link_libraries(Slant++ PUBLIC stb)
 
 if (LINUX)
-    target_link_libraries(mixr++ PUBLIC asound)
+    target_link_libraries(Slant++ PUBLIC asound)
 endif()
 
 set(WITH_OGG OFF CACHE BOOL "" FORCE)
 set(INSTALL_MANPAGES OFF CACHE BOOL "" FORCE)
 set(ENABLE_MULTITHREADING OFF CACHE BOOL "" FORCE)
 add_subdirectory(lib/flac)
-target_link_libraries(mixr++ PUBLIC FLAC::FLAC++)
+target_link_libraries(Slant++ PUBLIC FLAC::FLAC++)
 
-target_include_directories(mixr++ PUBLIC lib/minimp3)
+target_include_directories(Slant++ PUBLIC lib/minimp3)
 
-file(GLOB MIXR_SRC CONFIGURE_DEPENDS
-        include/mixr/*.h
-        include/mixr/Stream/*.h
-        src/mixr/*.h
-        src/mixr/*.cpp
+file(GLOB SLANT_SRC CONFIGURE_DEPENDS
+        include/Slant/*.h
+        include/Slant/Stream/*.h
+        src/Slant/*.h
+        src/Slant/*.cpp
 )
 
-add_library(mixr SHARED ${MIXR_SRC})
-target_include_directories(mixr PUBLIC include/)
-target_include_directories(mixr PRIVATE src/Impl)
-target_link_libraries(mixr PUBLIC mixr++)
+add_library(Slant SHARED ${SLANT_SRC})
+target_include_directories(Slant PUBLIC include/)
+target_include_directories(Slant PRIVATE src/Impl)
+target_link_libraries(Slant PUBLIC Slant++)
 
 if (MSVC)
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2")
-    target_compile_definitions(mixr++ PUBLIC _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+    target_compile_definitions(Slant++ PUBLIC _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
 elseif (WIN32)
-    target_link_options(mixr++ PRIVATE -static)
+    target_link_options(Slant++ PRIVATE -static)
 else()
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -s")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -s")
 endif ()
 
-add_executable(test_mixr++ tests/test_mixr++.cpp)
-target_link_libraries(test_mixr++ PRIVATE mixr++)
+add_executable(test_slant++ tests/test_slant++.cpp)
+target_link_libraries(test_slant++ PRIVATE Slant++)
 
-add_executable(test_mixr tests/test_mixr.c)
-target_link_libraries(test_mixr PRIVATE mixr)
+add_executable(test_slant tests/test_slant.c)
+target_link_libraries(test_slant PRIVATE Slant)

@@ -5,100 +5,100 @@
 #include <stdbool.h>
 
 #ifdef _WIN32
-#define Slant_C_API __declspec(dllexport)
+#define SLANT_C_API __declspec(dllexport)
 #else
-#define Slant_C_API
+#define SLANT_C_API
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    typedef struct MxContext MxContext;
-    typedef struct MxDevice MxDevice;
+    typedef struct SlContext SlContext;
+    typedef struct SlDevice SlDevice;
 
-    typedef size_t MxAudioBuffer;
-    typedef size_t MxAudioSource;
+    typedef size_t SlAudioBuffer;
+    typedef size_t SlAudioSource;
 
     typedef enum {
-        MX_DATA_TYPE_I8,
-        MX_DATA_TYPE_U8,
-        MX_DATA_TYPE_I16,
-        MX_DATA_TYPE_I32,
-        MX_DATA_TYPE_F32
-    } MxDataType;
+        SL_DATA_TYPE_I8,
+        SL_DATA_TYPE_U8,
+        SL_DATA_TYPE_I16,
+        SL_DATA_TYPE_I32,
+        SL_DATA_TYPE_F32
+    } SlDataType;
 
     typedef struct {
-        MxDataType DataType;
+        SlDataType DataType;
         uint32_t SampleRate;
         uint8_t Channels;
-    } MxAudioFormat;
+    } SlAudioFormat;
 
     typedef enum {
-        MX_SOURCE_TYPE_PCM,
-        MX_SOURCE_TYPE_ADPCM
-    } MxSourceType;
+        SL_SOURCE_TYPE_PCM,
+        SL_SOURCE_TYPE_ADPCM
+    } SlSourceType;
 
     typedef enum {
-        MX_SOURCE_STATE_STOPPED,
-        MX_SOURCE_STATE_PAUSED,
-        MX_SOURCE_STATE_PLAYING
-    } MxSourceState;
+        SL_SOURCE_STATE_STOPPED,
+        SL_SOURCE_STATE_PAUSED,
+        SL_SOURCE_STATE_PLAYING
+    } SlSourceState;
 
     typedef struct {
         size_t ChunkSize;
-    } MxADPCMDescription;
+    } SlADPCMDescription;
 
     typedef struct {
-        MxSourceType Type;
-        MxAudioFormat Format;
+        SlSourceType Type;
+        SlAudioFormat Format;
 
         union {
-            MxADPCMDescription ADPCM;
+            SlADPCMDescription ADPCM;
         };
-    } MxSourceDescription;
+    } SlSourceDescription;
 
-    Slant_C_API void mxCreateContext(uint32_t sampleRate, MxContext **pContext);
-    Slant_C_API void mxDestroyContext(MxContext *context);
+    SLANT_C_API void slCreateContext(uint32_t sampleRate, SlContext **pContext);
+    SLANT_C_API void slDestroyContext(SlContext *context);
 
-    Slant_C_API void mxCreateDevice(uint32_t sampleRate, MxDevice **pDevice);
-    Slant_C_API void mxDeviceGetContext(MxDevice *device, MxContext **pContext);
-    Slant_C_API void mxDestroyDevice(MxDevice *device);
+    SLANT_C_API void slCreateDevice(uint32_t sampleRate, SlDevice **pDevice);
+    SLANT_C_API void slDeviceGetContext(SlDevice *device, SlContext **pContext);
+    SLANT_C_API void slDestroyDevice(SlDevice *device);
 
-    Slant_C_API MxAudioBuffer mxContextCreateBuffer(MxContext *context, uint8_t *data, size_t dataLength);
-    Slant_C_API void mxContextDestroyBuffer(MxContext *context, MxAudioBuffer buffer);
+    SLANT_C_API SlAudioBuffer slContextCreateBuffer(SlContext *context, uint8_t *data, size_t dataLength);
+    SLANT_C_API void slContextDestroyBuffer(SlContext *context, SlAudioBuffer buffer);
 
-    Slant_C_API MxAudioSource mxContextCreateSource(MxContext *context, MxSourceDescription *description);
-    Slant_C_API void mxContextDestroySource(MxContext *context, MxAudioSource source);
+    SLANT_C_API SlAudioSource slContextCreateSource(SlContext *context, SlSourceDescription *description);
+    SLANT_C_API void slContextDestroySource(SlContext *context, SlAudioSource source);
 
-    Slant_C_API void mxContextUpdateBuffer(MxContext *context, MxAudioBuffer buffer, uint8_t *data, size_t dataLength);
+    SLANT_C_API void slContextUpdateBuffer(SlContext *context, SlAudioBuffer buffer, uint8_t *data, size_t dataLength);
 
-    Slant_C_API void mxSourceSubmitBuffer(MxContext *context, MxAudioSource source, MxAudioBuffer buffer);
-    Slant_C_API void mxSourceClearBuffers(MxContext *context, MxAudioSource source);
-    Slant_C_API void mxSourcePlay(MxContext *context, MxAudioSource source);
-    Slant_C_API void mxSourcePause(MxContext *context, MxAudioSource source);
-    Slant_C_API void mxSourceStop(MxContext *context, MxAudioSource source);
-    Slant_C_API void mxSourceSetSpeed(MxContext *context, MxAudioSource source, double speed);
-    Slant_C_API void mxSourceSetVolume(MxContext *context, MxAudioSource source, float volume);
-    Slant_C_API void mxSourceSetLooping(MxContext *context, MxAudioSource source, bool looping);
-    Slant_C_API void mxSourceSetPanning(MxContext *context, MxAudioSource source, float panning);
-    Slant_C_API void mxSourceSetChannelVolumes(MxContext *context, MxAudioSource source, float volumeL, float volumeR);
-    Slant_C_API void mxSourceSetBufferFinishedCallback(MxContext *context, MxAudioSource source, void (*callback)(void*), void* userData);
-    Slant_C_API void mxSourceSetStateChangedCallback(MxContext *context, MxAudioSource source, void (*callback)(MxSourceState, void*), void* userData);
+    SLANT_C_API void slSourceSubmitBuffer(SlContext *context, SlAudioSource source, SlAudioBuffer buffer);
+    SLANT_C_API void slSourceClearBuffers(SlContext *context, SlAudioSource source);
+    SLANT_C_API void slSourcePlay(SlContext *context, SlAudioSource source);
+    SLANT_C_API void slSourcePause(SlContext *context, SlAudioSource source);
+    SLANT_C_API void slSourceStop(SlContext *context, SlAudioSource source);
+    SLANT_C_API void slSourceSetSpeed(SlContext *context, SlAudioSource source, double speed);
+    SLANT_C_API void slSourceSetVolume(SlContext *context, SlAudioSource source, float volume);
+    SLANT_C_API void slSourceSetLooping(SlContext *context, SlAudioSource source, bool looping);
+    SLANT_C_API void slSourceSetPanning(SlContext *context, SlAudioSource source, float panning);
+    SLANT_C_API void slSourceSetChannelVolumes(SlContext *context, SlAudioSource source, float volumeL, float volumeR);
+    SLANT_C_API void slSourceSetBufferFinishedCallback(SlContext *context, SlAudioSource source, void (*callback)(void*), void* userData);
+    SLANT_C_API void slSourceSetStateChangedCallback(SlContext *context, SlAudioSource source, void (*callback)(SlSourceState, void*), void* userData);
 
-    Slant_C_API MxSourceState mxSourceGetState(MxContext *context, MxAudioSource source);
-    Slant_C_API double mxSourceGetSpeed(MxContext *context, MxAudioSource source);
-    Slant_C_API float mxSourceGetVolume(MxContext *context, MxAudioSource source);
-    Slant_C_API bool mxSourceGetLooping(MxContext *context, MxAudioSource source);
-    Slant_C_API float mxSourceGetPanning(MxContext *context, MxAudioSource source);
-    Slant_C_API void mxSourceGetChannelVolumes(MxContext *context, MxAudioSource source, float *volumeL, float *volumeR);
-    Slant_C_API size_t mxSourceGetPositionSamples(MxContext *context, MxAudioSource source);
-    Slant_C_API double mxSourceGetPositionSeconds(MxContext *context, MxAudioSource source);
+    SLANT_C_API SlSourceState slSourceGetState(SlContext *context, SlAudioSource source);
+    SLANT_C_API double slSourceGetSpeed(SlContext *context, SlAudioSource source);
+    SLANT_C_API float slSourceGetVolume(SlContext *context, SlAudioSource source);
+    SLANT_C_API bool slSourceGetLooping(SlContext *context, SlAudioSource source);
+    SLANT_C_API float slSourceGetPanning(SlContext *context, SlAudioSource source);
+    SLANT_C_API void slSourceGetChannelVolumes(SlContext *context, SlAudioSource source, float *volumeL, float *volumeR);
+    SLANT_C_API size_t slSourceGetPositionSamples(SlContext *context, SlAudioSource source);
+    SLANT_C_API double slSourceGetPositionSeconds(SlContext *context, SlAudioSource source);
 
-    Slant_C_API float mxContextGetMasterVolume(MxContext *context);
-    Slant_C_API void mxContextSetMasterVolume(MxContext *context, float volume);
+    SLANT_C_API float slContextGetMasterVolume(SlContext *context);
+    SLANT_C_API void slContextSetMasterVolume(SlContext *context, float volume);
 
-    Slant_C_API void mxContextMixToStereoF32Buffer(MxContext *context, float *buffer, size_t length);
+    SLANT_C_API void slContextMixToStereoF32Buffer(SlContext *context, float *buffer, size_t length);
 
 #ifdef __cplusplus
 }

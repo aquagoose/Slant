@@ -8,47 +8,47 @@
 
 int main(int argc, char **argv)
 {
-    MxAudioStream* stream;
-    mxStreamLoadVorbis(argv[1], &stream);
+    SlAudioStream* stream;
+    slStreamLoadMp3(argv[1], &stream);
 
-    MxAudioFormat format = mxStreamGetFormat(stream);
+    SlAudioFormat format = slStreamGetFormat(stream);
 
     size_t dataLength;
-    mxStreamGetPCM(stream, NULL, &dataLength);
+    slStreamGetPCM(stream, NULL, &dataLength);
     uint8_t* data = malloc(dataLength);
-    mxStreamGetPCM(stream, data, &dataLength);
+    slStreamGetPCM(stream, data, &dataLength);
 
-    MxDevice* device;
-    MxContext* context;
-    mxCreateDevice(48000, &device);
-    mxDeviceGetContext(device, &context);
+    SlDevice* device;
+    SlContext* context;
+    slCreateDevice(48000, &device);
+    slDeviceGetContext(device, &context);
 
-    //mxContextSetMasterVolume(context, 0.1f);
+    //slContextSetMasterVolume(context, 0.1f);
 
-    MxSourceDescription description;
-    description.Type = MX_SOURCE_TYPE_PCM;
+    SlSourceDescription description;
+    description.Type = SL_SOURCE_TYPE_PCM;
     description.Format = format;
 
-    mxDestroyStream(stream);
+    slDestroyStream(stream);
 
-    MxAudioBuffer buffer = mxContextCreateBuffer(context, data, dataLength);
+    SlAudioBuffer buffer = slContextCreateBuffer(context, data, dataLength);
 
-    MxAudioSource source = mxContextCreateSource(context, &description);
-    mxSourceSubmitBuffer(context, source, buffer);
+    SlAudioSource source = slContextCreateSource(context, &description);
+    slSourceSubmitBuffer(context, source, buffer);
 
-    //mxSourceSetSpeed(context, source, 2.0);
-    //mxSourceSetVolume(context, source, 0.5f);
-    mxSourceSetLooping(context, source, true);
-    //mxSourceSetPanning(context, source, -1.0f);
+    //slSourceSetSpeed(context, source, 2.0);
+    //slSourceSetVolume(context, source, 0.5f);
+    slSourceSetLooping(context, source, true);
+    //slSourceSetPanning(context, source, -1.0f);
 
-    mxSourcePlay(context, source);
+    slSourcePlay(context, source);
     
-    while (mxSourceGetState(context, source) != MX_SOURCE_STATE_STOPPED)
+    while (slSourceGetState(context, source) != SL_SOURCE_STATE_STOPPED)
     {
         usleep(1000000);
     }
     
-    mxDestroyDevice(device);
+    slDestroyDevice(device);
     
     return 0;
 }

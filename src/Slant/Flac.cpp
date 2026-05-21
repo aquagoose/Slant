@@ -4,7 +4,7 @@
 
 using namespace Slant::Stream;
 
-void mxStreamLoadFlac(const char* path, MxAudioStream **pAudioStream) {
+void slStreamLoadFlac(const char* path, SlAudioStream **pAudioStream) {
     Flac* flac = new Flac(path);
-    *pAudioStream = (MxAudioStream*) flac;
+    *pAudioStream = (SlAudioStream*) flac;
 }

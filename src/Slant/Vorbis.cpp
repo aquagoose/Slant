@@ -4,7 +4,7 @@
 
 using namespace Slant::Stream;
 
-void mxStreamLoadVorbis(const char* path, MxAudioStream **pAudioStream) {
+void slStreamLoadVorbis(const char* path, SlAudioStream **pAudioStream) {
     Vorbis* vorbis = new Vorbis(path);
-    *pAudioStream = (MxAudioStream*) vorbis;
+    *pAudioStream = (SlAudioStream*) vorbis;
 }

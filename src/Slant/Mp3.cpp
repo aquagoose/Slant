@@ -4,7 +4,7 @@
 
 using namespace Slant::Stream;
 
-void mxStreamLoadMp3(const char* path, MxAudioStream **pAudioStream) {
+void slStreamLoadMp3(const char* path, SlAudioStream **pAudioStream) {
     Mp3* mp3 = new Mp3(path);
-    *pAudioStream = (MxAudioStream*) mp3;
+    *pAudioStream = (SlAudioStream*) mp3;
 }

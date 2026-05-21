@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <thread>
 
-#define MX_ALSA_CHECK(Res, Msg) {\
+#define SL_ALSA_CHECK(Res, Msg) {\
     int error = Res;\
     if (error < 0) {\
         throw std::runtime_error(Msg": " + std::string(snd_strerror(error)));\
@@ -37,25 +37,25 @@ namespace Slant::Device
 
     AlsaDevice::AlsaDevice(const uint32_t sampleRate) : AudioDevice(sampleRate)
     {
-        MX_ALSA_CHECK(snd_pcm_open(&_device, "default", SND_PCM_STREAM_PLAYBACK, 0), "Failed to open device");
-        //MX_ALSA_CHECK(snd_pcm_set_params(_device, SND_PCM_FORMAT_FLOAT, SND_PCM_ACCESS_RW_INTERLEAVED, 2, sampleRate, true, 500000), "Failed to set params");
+        SL_ALSA_CHECK(snd_pcm_open(&_device, "default", SND_PCM_STREAM_PLAYBACK, 0), "Failed to open device");
+        //SL_ALSA_CHECK(snd_pcm_set_params(_device, SND_PCM_FORMAT_FLOAT, SND_PCM_ACCESS_RW_INTERLEAVED, 2, sampleRate, true, 500000), "Failed to set params");
 
         snd_pcm_hw_params_t* params;
         snd_pcm_hw_params_alloca(&params);
 
-        MX_ALSA_CHECK(snd_pcm_hw_params_any(_device, params), "Failed to set any params");
-        MX_ALSA_CHECK(snd_pcm_hw_params_set_rate_resample(_device, params, true), "Failed to enable resampling");
-        MX_ALSA_CHECK(snd_pcm_hw_params_set_access(_device, params, SND_PCM_ACCESS_RW_INTERLEAVED), "Failed to set interleaved mode");
-        MX_ALSA_CHECK(snd_pcm_hw_params_set_format(_device, params, SND_PCM_FORMAT_FLOAT), "Failed to set float format");
-        MX_ALSA_CHECK(snd_pcm_hw_params_set_rate(_device, params, sampleRate, 0), "Failed to set sample rate");
-        MX_ALSA_CHECK(snd_pcm_hw_params_set_channels(_device, params, 2), "Failed to set channels");
-        MX_ALSA_CHECK(snd_pcm_hw_params_set_period_size(_device, params, 256, 0), "Failed to set period size");
-        MX_ALSA_CHECK(snd_pcm_hw_params_set_periods(_device, params, 2, 0), "Failed to set num periods");
+        SL_ALSA_CHECK(snd_pcm_hw_params_any(_device, params), "Failed to set any params");
+        SL_ALSA_CHECK(snd_pcm_hw_params_set_rate_resample(_device, params, true), "Failed to enable resampling");
+        SL_ALSA_CHECK(snd_pcm_hw_params_set_access(_device, params, SND_PCM_ACCESS_RW_INTERLEAVED), "Failed to set interleaved mode");
+        SL_ALSA_CHECK(snd_pcm_hw_params_set_format(_device, params, SND_PCM_FORMAT_FLOAT), "Failed to set float format");
+        SL_ALSA_CHECK(snd_pcm_hw_params_set_rate(_device, params, sampleRate, 0), "Failed to set sample rate");
+        SL_ALSA_CHECK(snd_pcm_hw_params_set_channels(_device, params, 2), "Failed to set channels");
+        SL_ALSA_CHECK(snd_pcm_hw_params_set_period_size(_device, params, 256, 0), "Failed to set period size");
+        SL_ALSA_CHECK(snd_pcm_hw_params_set_periods(_device, params, 2, 0), "Failed to set num periods");
 
-        MX_ALSA_CHECK(snd_pcm_hw_params(_device, params), "Failed to set hw params");
+        SL_ALSA_CHECK(snd_pcm_hw_params(_device, params), "Failed to set hw params");
 
         snd_pcm_uframes_t size;
-        MX_ALSA_CHECK(snd_pcm_hw_params_get_buffer_size(params, &size), "Failed to get buffer size");
+        SL_ALSA_CHECK(snd_pcm_hw_params_get_buffer_size(params, &size), "Failed to get buffer size");
 
         _bufferSizeFrames = size;
         _bufferSize = snd_pcm_frames_to_bytes(_device, _bufferSizeFrames);

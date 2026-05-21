@@ -6,21 +6,21 @@
 extern "C" {
 #endif
 
-    typedef struct MxAudioStream MxAudioStream;
+    typedef struct SlAudioStream SlAudioStream;
 
-    Slant_C_API MxAudioFormat mxStreamGetFormat(MxAudioStream *stream);
+    SLANT_C_API SlAudioFormat slStreamGetFormat(SlAudioStream *stream);
 
-    Slant_C_API size_t mxStreamGetBuffer(MxAudioStream *stream, uint8_t *buffer, size_t bufferLength);
+    SLANT_C_API size_t slStreamGetBuffer(SlAudioStream *stream, uint8_t *buffer, size_t bufferLength);
 
-    Slant_C_API void mxStreamRestart(MxAudioStream *stream);
-    Slant_C_API void mxStreamSeekToSample(MxAudioStream *stream, size_t sample);
+    SLANT_C_API void slStreamRestart(SlAudioStream *stream);
+    SLANT_C_API void slStreamSeekToSample(SlAudioStream *stream, size_t sample);
 
-    Slant_C_API size_t mxStreamGetPositionInSamples(MxAudioStream *stream);
+    SLANT_C_API size_t slStreamGetPositionInSamples(SlAudioStream *stream);
 
-    Slant_C_API size_t mxStreamGetLengthInSamples(MxAudioStream *stream);
-    Slant_C_API void mxStreamGetPCM(MxAudioStream *stream, uint8_t *data, size_t *dataLength);
+    SLANT_C_API size_t slStreamGetLengthInSamples(SlAudioStream *stream);
+    SLANT_C_API void slStreamGetPCM(SlAudioStream *stream, uint8_t *data, size_t *dataLength);
 
-    Slant_C_API void mxDestroyStream(MxAudioStream *stream);
+    SLANT_C_API void slDestroyStream(SlAudioStream *stream);
 
 #ifdef __cplusplus
 }

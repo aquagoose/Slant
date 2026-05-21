@@ -4,21 +4,21 @@
 
 using namespace Slant::Stream;
 
-void mxStreamLoadWav(const char* path, MxAudioStream **pAudioStream) {
+void slStreamLoadWav(const char* path, SlAudioStream **pAudioStream) {
     Wav* wav = new Wav(path);
-    *pAudioStream = (MxAudioStream*) wav;
+    *pAudioStream = (SlAudioStream*) wav;
 }
 
-bool mxWavIsADPCM(MxAudioStream *stream) {
+bool slWavIsADPCM(SlAudioStream *stream) {
     Wav* wav = (Wav*) stream;
     return wav->IsADPCM();
 }
 
-MxADPCMInfo mxWavGetADPCMInfo(MxAudioStream *stream) {
+SlADPCMInfo slWavGetADPCMInfo(SlAudioStream *stream) {
     Wav* wav = (Wav*) stream;
 
     ADPCMInfo info = wav->ADPCMInfo();
-    auto mxInfo = reinterpret_cast<MxADPCMInfo*>(&info);
+    auto slInfo = reinterpret_cast<SlADPCMInfo*>(&info);
 
-    return *mxInfo;
+    return *slInfo;
 }

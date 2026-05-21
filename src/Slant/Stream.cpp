@@ -4,49 +4,49 @@
 using namespace Slant;
 using namespace Slant::Stream;
 
-MxAudioFormat mxStreamGetFormat(MxAudioStream *stream) {
+SlAudioFormat slStreamGetFormat(SlAudioStream *stream) {
     AudioStream* aStream = (AudioStream*) stream;
 
     AudioFormat format = aStream->Format();
 
     return {
-       /* .DataType = */ (MxDataType) format.DataType,
+       /* .DataType = */ (SlDataType) format.DataType,
        /* .SampleRate = */format.SampleRate,
        /* .Channels = */ format.Channels
     };
 }
 
-size_t mxStreamGetBuffer(MxAudioStream *stream, uint8_t *buffer, size_t bufferLength) {
+size_t slStreamGetBuffer(SlAudioStream *stream, uint8_t *buffer, size_t bufferLength) {
     AudioStream* aStream = (AudioStream*) stream;
 
     return aStream->GetBuffer(buffer, bufferLength);
 }
 
-void mxStreamRestart(MxAudioStream *stream) {
+void slStreamRestart(SlAudioStream *stream) {
     AudioStream* aStream = (AudioStream*) stream;
 
     aStream->Restart();
 }
 
-void mxStreamSeekToSample(MxAudioStream *stream, size_t sample) {
+void slStreamSeekToSample(SlAudioStream *stream, size_t sample) {
     AudioStream* aStream = (AudioStream*) stream;
 
     aStream->SeekToSample(sample);
 }
 
-size_t mxStreamGetPositionInSamples(MxAudioStream *stream) {
+size_t slStreamGetPositionInSamples(SlAudioStream *stream) {
     AudioStream* aStream = (AudioStream*) stream;
 
     return aStream->PositionInSamples();
 }
 
-size_t mxStreamGetLengthInSamples(MxAudioStream *stream) {
+size_t slStreamGetLengthInSamples(SlAudioStream *stream) {
     AudioStream* aStream = (AudioStream*) stream;
 
     return aStream->LengthInSamples();
 }
 
-void mxStreamGetPCM(MxAudioStream *stream, uint8_t *data, size_t *dataLength) {
+void slStreamGetPCM(SlAudioStream *stream, uint8_t *data, size_t *dataLength) {
     AudioStream* aStream = (AudioStream*) stream;
     auto format = aStream->Format();
 
@@ -59,7 +59,7 @@ void mxStreamGetPCM(MxAudioStream *stream, uint8_t *data, size_t *dataLength) {
     }
 }
 
-void mxDestroyStream(MxAudioStream *stream) {
+void slDestroyStream(SlAudioStream *stream) {
     AudioStream* aStream = (AudioStream*) stream;
     delete aStream;
 }

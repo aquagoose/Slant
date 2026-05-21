@@ -8,18 +8,18 @@ extern "C" {
 #endif
 
     typedef enum {
-        MX_ADPCM_TYPE_IMA
-    } MxADPCMType;
+        SL_ADPCM_TYPE_IMA
+    } SlADPCMType;
 
     typedef struct {
-        MxADPCMType Type;
+        SlADPCMType Type;
         size_t ChunkSize;
-    } MxADPCMInfo;
+    } SlADPCMInfo;
 
-    Slant_C_API void mxStreamLoadWav(const char* path, MxAudioStream **pAudioStream);
+    SLANT_C_API void slStreamLoadWav(const char* path, SlAudioStream **pAudioStream);
 
-    Slant_C_API bool mxWavIsADPCM(MxAudioStream *stream);
-    Slant_C_API MxADPCMInfo mxWavGetADPCMInfo(MxAudioStream *stream);
+    SLANT_C_API bool slWavIsADPCM(SlAudioStream *stream);
+    SLANT_C_API SlADPCMInfo slWavGetADPCMInfo(SlAudioStream *stream);
 
 #ifdef __cplusplus
 }

@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-    Slant_C_API void mxStreamLoadVorbis(const char *path, MxAudioStream **stream);
+    SLANT_C_API void slStreamLoadVorbis(const char *path, SlAudioStream **stream);
 
 #ifdef __cplusplus
 }

@@ -37,6 +37,8 @@ MxResult mxDestroyContext(MxContext *context);
 MxResult mxCreateBuffer(MxContext *context, const MxBufferInfo *info, MxBuffer *buffer);
 //MxResult mxDestroyBuffer(MxContext *context, MxBuffer buffer);
 
+MxResult mxUpdateBuffer(MxContext *context, MxBuffer buffer, void* data, size_t dataSize);
+
 #ifdef __cplusplus
 }
 #endif

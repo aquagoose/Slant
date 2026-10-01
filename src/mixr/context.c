@@ -1,10 +1,17 @@
 #include "mixr/context.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
 typedef struct MixrBuffer
 {
+    // if false, the buffer is not valid and cannot be used
+    bool valid;
 
+    void* data;
+    size_t dataLength;
+    size_t dataCapacity;
 } MixrBuffer;
 
 typedef struct MixrContext
@@ -70,10 +77,14 @@ MxResult mxCreateBuffer(MxContext *context, const MxBufferInfo *info, MxBuffer *
         ctx->buffers = buffers;
     }
 
-    size_t bufferID = ++ctx->buffersLength;
+    size_t bufferID = ctx->buffersLength++;
     *buffer = (MxBuffer) bufferID;
 
-    MixrBuffer buf = {};
+    MixrBuffer buf;
+    buf.valid = true;
+    buf.data = NULL;
+    buf.dataLength = 0;
+    buf.dataCapacity = 0;
     ctx->buffers[bufferID] = buf;
 
     return MX_RESULT_OK;
@@ -86,3 +97,39 @@ MxResult mxCreateBuffer(MxContext *context, const MxBufferInfo *info, MxBuffer *
 
     MixrContext ctx
 }*/
+
+MxResult mxUpdateBuffer(MxContext *context, MxBuffer buffer, void *data, size_t dataSize)
+{
+    if (!context)
+        return MX_RESULT_ERROR_NULL_PARAMETER;
+
+    MixrContext *ctx = (MixrContext *) context;
+    if (buffer >= ctx->buffersLength || !ctx->buffers[buffer].valid)
+        return MX_RESULT_ERROR_INVALID_BUFFER;
+
+    MixrBuffer *buf = &ctx->buffers[buffer];
+
+    // if no data, allocate a new buffer
+    if (!buf->data)
+    {
+        buf->data = malloc(dataSize);
+        if (!buf->data)
+            return MX_RESULT_ERROR_OUT_OF_MEMORY;
+        buf->dataCapacity = dataSize;
+    }
+    // if the data we're copying is larger than the existing buffer, resize it
+    // otherwise, the buffer will not be resized.
+    else if (dataSize > buf->dataCapacity)
+    {
+        buf->dataCapacity = dataSize;
+        void* newData = realloc(buf->data, dataSize);
+        if (!newData)
+            return MX_RESULT_ERROR_OUT_OF_MEMORY;
+        buf->data = newData;
+    }
+
+    buf->dataLength = dataSize;
+    memcpy(buf->data, data, dataSize);
+
+    return MX_RESULT_OK;
+}

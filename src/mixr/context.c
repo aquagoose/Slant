@@ -52,6 +52,10 @@ MxResult mxDestroyContext(MxContext *context)
         return MX_RESULT_ERROR_NULL_PARAMETER;
 
     MixrContext *ctx = (MixrContext *) context;
+
+    for (size_t i = 0; i < ctx->buffersLength; i++)
+        free(ctx->buffers[i].data);
+
     free(ctx->buffers);
     free(ctx);
 
@@ -102,6 +106,8 @@ MxResult mxUpdateBuffer(MxContext *context, MxBuffer buffer, void *data, size_t 
 {
     if (!context)
         return MX_RESULT_ERROR_NULL_PARAMETER;
+    if (!data && dataSize > 0)
+        return MX_RESULT_ERROR_INVALID_PARAMETER;
 
     MixrContext *ctx = (MixrContext *) context;
     if (buffer >= ctx->buffersLength || !ctx->buffers[buffer].valid)
@@ -129,7 +135,11 @@ MxResult mxUpdateBuffer(MxContext *context, MxBuffer buffer, void *data, size_t 
     }
 
     buf->dataLength = dataSize;
-    memcpy(buf->data, data, dataSize);
+
+    if (data)
+        memcpy(buf->data, data, dataSize);
+    else
+        buf->data = NULL;
 
     return MX_RESULT_OK;
 }

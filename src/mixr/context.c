@@ -30,6 +30,7 @@ MxResult mxCreateContext(const MxContextInfo *info, MxContext **context)
         return MX_RESULT_ERROR_OUT_OF_MEMORY;
 
     ctx->sampleRate = info->sampleRate;
+
     ctx->buffersCapacity = 16;
     ctx->buffersLength = 0;
     ctx->buffers = (MixrBuffer *) malloc(ctx->buffersCapacity * sizeof(MixrBuffer));

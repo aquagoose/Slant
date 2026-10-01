@@ -11,3 +11,19 @@ file(GLOB MIXR_SRC CONFIGURE_DEPENDS
 
 add_library(mixr SHARED ${MIXR_SRC})
 target_include_directories(mixr PUBLIC include/)
+
+function(mixr_tests dir name)
+    message(STATUS "Searching for tests in ${dir}")
+    list(APPEND CMAKE_MESSAGE_INDENT "  ")
+    file(GLOB TEST_SRC ${dir}/*.c)
+    foreach (file IN LISTS TEST_SRC)
+        get_filename_component(filename ${file} NAME_WE)
+        set(testname "Test_${name}_${filename}")
+        message(STATUS "${testname} -> ${file}")
+        add_executable(${testname} ${file})
+        target_link_libraries(${testname} PRIVATE mixr)
+    endforeach ()
+    list(POP_BACK CMAKE_MESSAGE_INDENT)
+endfunction()
+
+mixr_tests(tests/mixr "Mixr")

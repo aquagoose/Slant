@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 typedef enum MxResult
 {
     // The operation completed successfully.
@@ -31,6 +33,25 @@ typedef enum MxResult
     // The file was not found.
     MX_RESULT_ERROR_FILE_NOT_FOUND
 } MxResult;
+
+// Defines supported data types for audio data.
+typedef enum MxDataType
+{
+    MX_DATA_TYPE_I8,
+    MX_DATA_TYPE_U8,
+    MX_DATA_TYPE_I16,
+    MX_DATA_TYPE_U16,
+    MX_DATA_TYPE_I32,
+    MX_DATA_TYPE_F32
+} MxDataType;
+
+// Describes the format of audio data.
+typedef struct MxAudioFormat
+{
+    MxDataType type;
+    uint32_t sampleRate;
+    uint8_t channels;
+} MxAudioFormat;
 
 const char *mxResultToString(MxResult result);
 

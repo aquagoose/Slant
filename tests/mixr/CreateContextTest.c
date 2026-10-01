@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #define CHECK(result, operation) {\
+    printf(operation"\n");\
     MxResult res = result;\
     if (res != MX_RESULT_OK) {\
         printf("Mixr operation \"%s\" failed: %s\n", operation, mxResultToString(res));\

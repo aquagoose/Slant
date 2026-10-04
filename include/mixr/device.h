@@ -10,12 +10,7 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 
-typedef size_t MxDeviceBackend;
-
-/**
- * Choose a device automatically.
- */
-#define MX_DEVICE_AUTO 0
+typedef size_t MxDeviceFlags;
 
 typedef size_t MxSourceFlags;
 
@@ -26,9 +21,23 @@ typedef size_t MxBuffer;
 // A source contains a buffer queue and is used to play audio.
 typedef size_t MxSource;
 
+typedef enum MxDeviceBackend
+{
+    // Choose a device automatically.
+    MX_DEVICE_AUTO,
+    // Do not open an audio device. This allows for devices to be used with custom backends, or to be used as software mixers.
+    MX_DEVICE_NONE,
+    // SDL3 backend.
+    MX_DEVICE_SDL
+} MxDeviceBackend;
+
 // Contains parameters for use in device creation.
 typedef struct MxDeviceInfo
 {
+    // Which backend to use.
+    MxDeviceBackend backend;
+    // Device creation flags.
+    MxDeviceFlags flags;
     // The sampling rate. Typical values include 44100 (CD quality) and 48000 (DVD quality). This value CANNOT be 0.
     uint32_t sampleRate;
 } MxDeviceInfo;
@@ -46,9 +55,9 @@ typedef struct MxSourceInfo
     MxAudioFormat format;
 } MxSourceInfo;
 
-// Create a mixr device.
+// Create a device.
 MxResult mxCreateDevice(const MxDeviceInfo *info, MxDevice **device);
-// Destroy a mixr device.
+// Destroy a device.
 MxResult mxDestroyDevice(MxDevice *device);
 
 // Create a buffer with the given device.

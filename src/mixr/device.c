@@ -1,4 +1,4 @@
-#include "mixr/context.h"
+#include "mixr/device.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -21,7 +21,7 @@ typedef struct MixrSource
     MxAudioFormat format;
 } MixrSource;
 
-typedef struct MixrContext
+typedef struct MixrDevice
 {
     uint32_t sampleRate;
 
@@ -32,9 +32,9 @@ typedef struct MixrContext
     MixrSource *sources;
     size_t sourcesLength;
     size_t sourcesCapacity;
-} MixrContext;
+} MixrDevice;
 
-MxResult mxCreateContext(const MxContextInfo *info, MxContext **context)
+MxResult mxCreateDevice(const MxDeviceInfo *info, MxDevice **device)
 {
     if (!info)
         return MX_RESULT_ERROR_NULL_PARAMETER;
@@ -43,61 +43,61 @@ MxResult mxCreateContext(const MxContextInfo *info, MxContext **context)
     if (info->sampleRate == 0)
         return MX_RESULT_ERROR_INVALID_PARAMETER;
 
-    MixrContext *ctx = (MixrContext *) malloc(sizeof(MixrContext));
-    if (!ctx)
+    MixrDevice *dev = (MixrDevice *) malloc(sizeof(MixrDevice));
+    if (!dev)
         return MX_RESULT_ERROR_OUT_OF_MEMORY;
 
-    ctx->sampleRate = info->sampleRate;
+    dev->sampleRate = info->sampleRate;
 
-    ctx->buffersCapacity = 16;
-    ctx->buffersLength = 0;
-    ctx->buffers = (MixrBuffer *) malloc(ctx->buffersCapacity * sizeof(MixrBuffer));
+    dev->buffersCapacity = 16;
+    dev->buffersLength = 0;
+    dev->buffers = (MixrBuffer *) malloc(dev->buffersCapacity * sizeof(MixrBuffer));
 
-    ctx->sourcesCapacity = 16;
-    ctx->sourcesLength = 0;
-    ctx->sources = (MixrSource *) malloc(ctx->sourcesCapacity * sizeof(MixrSource));
+    dev->sourcesCapacity = 16;
+    dev->sourcesLength = 0;
+    dev->sources = (MixrSource *) malloc(dev->sourcesCapacity * sizeof(MixrSource));
 
-    *context = (MxContext *) ctx;
+    *device = (MxDevice *) dev;
     return MX_RESULT_OK;
 }
 
-MxResult mxDestroyContext(MxContext *context)
+MxResult mxDestroyDevice(MxDevice *device)
 {
-    if (!context)
+    if (!device)
         return MX_RESULT_ERROR_NULL_PARAMETER;
 
-    MixrContext *ctx = (MixrContext *) context;
+    MixrDevice *dev = (MixrDevice *) device;
 
-    for (size_t i = 0; i < ctx->buffersLength; i++)
-        free(ctx->buffers[i].data);
+    for (size_t i = 0; i < dev->buffersLength; i++)
+        free(dev->buffers[i].data);
 
-    free(ctx->sources);
-    free(ctx->buffers);
-    free(ctx);
+    free(dev->sources);
+    free(dev->buffers);
+    free(dev);
 
     return MX_RESULT_OK;
 }
 
-MxResult mxCreateBuffer(MxContext *context, const MxBufferInfo *info, MxBuffer *buffer)
+MxResult mxCreateBuffer(MxDevice *device, const MxBufferInfo *info, MxBuffer *buffer)
 {
-    if (!context)
+    if (!device)
         return MX_RESULT_ERROR_NULL_PARAMETER;
     if (!info)
         return MX_RESULT_ERROR_NULL_PARAMETER;
 
-    MixrContext *ctx = (MixrContext *) context;
+    MixrDevice *dev = (MixrDevice *) device;
 
     // resize buffers list if needed
-    if (ctx->buffersLength + 1 >= ctx->buffersCapacity)
+    if (dev->buffersLength + 1 >= dev->buffersCapacity)
     {
-        ctx->buffersCapacity <<= 1;
-        MixrBuffer *buffers = (MixrBuffer *) realloc(ctx->buffers, ctx->buffersCapacity * sizeof(MixrBuffer));
+        dev->buffersCapacity <<= 1;
+        MixrBuffer *buffers = (MixrBuffer *) realloc(dev->buffers, dev->buffersCapacity * sizeof(MixrBuffer));
         if (!buffers)
             return MX_RESULT_ERROR_OUT_OF_MEMORY;
-        ctx->buffers = buffers;
+        dev->buffers = buffers;
     }
 
-    size_t bufferID = ctx->buffersLength++;
+    size_t bufferID = dev->buffersLength++;
     *buffer = (MxBuffer) bufferID;
 
     MixrBuffer buf;
@@ -105,31 +105,31 @@ MxResult mxCreateBuffer(MxContext *context, const MxBufferInfo *info, MxBuffer *
     buf.data = NULL;
     buf.dataLength = 0;
     buf.dataCapacity = 0;
-    ctx->buffers[bufferID] = buf;
+    dev->buffers[bufferID] = buf;
 
     return MX_RESULT_OK;
 }
 
-/*MxResult mxDestroyBuffer(MxContext *context, MxBuffer buffer)
+/*MxResult mxDestroyBuffer(MxDevice *device, MxBuffer buffer)
 {
-    if (!context)
+    if (!device)
         return MX_RESULT_ERROR_NULL_PARAMETER;
 
-    MixrContext ctx
+    MixrDevice dev
 }*/
 
-MxResult mxUpdateBuffer(MxContext *context, MxBuffer buffer, void *data, size_t dataSize)
+MxResult mxUpdateBuffer(MxDevice *device, MxBuffer buffer, void *data, size_t dataSize)
 {
-    if (!context)
+    if (!device)
         return MX_RESULT_ERROR_NULL_PARAMETER;
     if (!data && dataSize > 0)
         return MX_RESULT_ERROR_INVALID_PARAMETER;
 
-    MixrContext *ctx = (MixrContext *) context;
-    if (buffer >= ctx->buffersLength || !ctx->buffers[buffer].valid)
+    MixrDevice *dev = (MixrDevice *) device;
+    if (buffer >= dev->buffersLength || !dev->buffers[buffer].valid)
         return MX_RESULT_ERROR_INVALID_BUFFER;
 
-    MixrBuffer *buf = &ctx->buffers[buffer];
+    MixrBuffer *buf = &dev->buffers[buffer];
 
     // if no data, allocate a new buffer
     if (!buf->data)
@@ -160,9 +160,9 @@ MxResult mxUpdateBuffer(MxContext *context, MxBuffer buffer, void *data, size_t 
     return MX_RESULT_OK;
 }
 
-MxResult mxCreateSource(MxContext *context, const MxSourceInfo *info, MxSource *source)
+MxResult mxCreateSource(MxDevice *device, const MxSourceInfo *info, MxSource *source)
 {
-    if (!context)
+    if (!device)
         return MX_RESULT_ERROR_NULL_PARAMETER;
     if (!info)
         return MX_RESULT_ERROR_NULL_PARAMETER;
@@ -174,24 +174,24 @@ MxResult mxCreateSource(MxContext *context, const MxSourceInfo *info, MxSource *
     if (info->format.type < 0 || info->format.type > MX_DATA_TYPE_F32)
         return MX_RESULT_ERROR_INVALID_PARAMETER;
 
-    MixrContext *ctx = (MixrContext *) context;
+    MixrDevice *dev = (MixrDevice *) device;
 
     // resize sources if necessary
-    if (ctx->sourcesLength + 1 >= ctx->sourcesCapacity)
+    if (dev->sourcesLength + 1 >= dev->sourcesCapacity)
     {
-        ctx->sourcesCapacity <<= 1;
-        MixrSource *sources = (MixrSource *) realloc(ctx->sources, ctx->sourcesCapacity * sizeof(MixrSource));
+        dev->sourcesCapacity <<= 1;
+        MixrSource *sources = (MixrSource *) realloc(dev->sources, dev->sourcesCapacity * sizeof(MixrSource));
         if (!sources)
             return MX_RESULT_ERROR_OUT_OF_MEMORY;
-        ctx->sources = sources;
+        dev->sources = sources;
     }
 
-    size_t sourceID = ctx->sourcesLength++;
+    size_t sourceID = dev->sourcesLength++;
     *source = (MxSource) sourceID;
     MixrSource src;
     src.valid = true;
     src.format = info->format;
-    ctx->sources[sourceID] = src;
+    dev->sources[sourceID] = src;
 
     return MX_RESULT_OK;
 }

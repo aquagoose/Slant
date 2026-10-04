@@ -1,4 +1,4 @@
-#include <mixr/context.h>
+#include <mixr/device.h>
 #include <stdio.h>
 
 #define CHECK(result, operation) {\
@@ -12,14 +12,14 @@
 
 int main(int argc, char **argv)
 {
-    MxContextInfo contextInfo =
+    MxDeviceInfo deviceInfo =
     {
         .sampleRate = 44100
     };
 
-    MxContext *context;
-    CHECK(mxCreateContext(&contextInfo, &context), "Create context");
+    MxDevice *device;
+    CHECK(mxCreateDevice(&deviceInfo, &device), "Create device");
 
-    CHECK(mxDestroyContext(context), "Destroy context");
+    CHECK(mxDestroyDevice(device), "Destroy device");
     return 0;
 }

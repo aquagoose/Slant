@@ -1,8 +1,71 @@
 #include "Slant/Slant.h"
-#include "Impl.h"
-#include "Slant++/AudioDevice.h"
 
-using namespace sl;
+#include <vector>
+#include <deque>
+
+struct Buffer
+{
+    std::vector<uint8_t> Data;
+    size_t DataLength;
+};
+
+struct Source
+{
+    // ------ Source Info -----
+    S Type;
+    AudioFormat Format;
+    int ByteAlign;
+    int StereoAlign;
+    double SpeedCorrection;
+
+    // ----- Buffering -----
+    std::deque<size_t> QueuedBuffers;
+    uint8_t* MixBuffer;
+
+    // ----- Playing Info ------
+    bool Playing;
+    double Speed;
+    float MainVolume;
+    bool Looping;
+
+    size_t LengthInSamples;
+
+    float VolumeL;
+    float VolumeR;
+
+    size_t Position;
+    double FinePosition;
+
+    void (*BufferFinishedCallback)(void*);
+    void* BufferFinishedUserData;
+
+    void (*StateChangedCallback)(SourceState, void*);
+    void* StateChangedUserData;
+
+    // ----- Interpolation -----
+    size_t LastPosition;
+    float LastSampleL;
+    float LastSampleR;
+
+    // ----- IMA ADPCM -----
+    size_t LastChunk;
+    size_t ChunkSize;
+    size_t NumChunks;
+};
+
+class Impl
+{
+    uint32_t _sampleRate;
+    float _masterVolume;
+
+    std::vector<Buffer> _buffers;
+    std::vector<Source> _sources;
+
+    std::deque<size_t> _availableBuffers;
+    std::deque<size_t> _availableSources;
+
+    std::mutex _mutex;
+};
 
 void slCreateContext(uint32_t sampleRate, SlContext** pContext) {
     Impl* impl = new Impl(sampleRate);

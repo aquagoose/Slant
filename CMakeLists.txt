@@ -15,7 +15,7 @@ file(GLOB SLANT++_SRC CONFIGURE_DEPENDS
         src/Slant++/Stream/*.cpp
         src/Slant++/Utils/*.h
         src/Slant++/Utils/*.cpp
-        
+
         src/Impl/*.h
         src/Impl/*.cpp
 )

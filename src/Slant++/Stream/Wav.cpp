@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 
-namespace Slant::Stream {
+namespace sl::Stream {
     Wav::Wav(const std::string& path) {
         _isAdpcm = false;
 

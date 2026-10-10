@@ -5,7 +5,7 @@ inline int Clamp(int value, int min, int max) {
     return value <= min ? min : value >= max ? max : value;
 }
 
-namespace Slant::Utils::ADPCM {
+namespace sl::Utils::ADPCM {
     int IndexTable[] = {
             -1, -1, -1, -1, 2, 4, 6, 8,
             -1, -1, -1, -1, 2, 4, 6, 8

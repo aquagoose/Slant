@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-namespace Slant::Stream {
+namespace sl::Stream {
 
     class SLANT_CPP_API Flac : public AudioStream {
     private:

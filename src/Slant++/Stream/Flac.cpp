@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace Slant::Stream {
+namespace sl::Stream {
     class FlacDecoder : public FLAC::Decoder::File {
     public:
         std::vector<uint8_t> Buffer;

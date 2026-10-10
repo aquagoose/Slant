@@ -11,7 +11,7 @@ inline float Lerp(float a, float b, float multiplier) {
     return multiplier * (b - a) + a;
 }
 
-namespace Slant {
+namespace sl {
     Impl::Impl(uint32_t sampleRate) {
         _sampleRate = sampleRate;
         _masterVolume = 1.0f;

@@ -5,7 +5,7 @@
 
 #include "../Common.h"
 
-namespace Slant::Stream {
+namespace sl::Stream {
 
     class SLANT_CPP_API AudioStream {
     public:

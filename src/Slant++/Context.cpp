@@ -3,7 +3,7 @@
 #include "Slant++/AudioSource.h"
 #include "Impl.h"
 
-namespace Slant {
+namespace sl {
     Context::Context(uint32_t sampleRate) {
         _impl = std::make_unique<Impl>(sampleRate);
     }

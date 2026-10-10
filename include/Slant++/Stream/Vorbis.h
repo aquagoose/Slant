@@ -5,7 +5,7 @@
 #include <string>
 #include <iostream>
 
-namespace Slant::Stream {
+namespace sl::Stream {
 
     class SLANT_CPP_API Vorbis : public AudioStream {
     private:

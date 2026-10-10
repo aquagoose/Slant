@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <iostream>
 
-namespace Slant::Stream {
+namespace sl::Stream {
     Mp3::Mp3(const std::string& path) {
 #if _WIN32
         const auto wpath = ToWString(path);

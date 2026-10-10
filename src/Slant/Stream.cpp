@@ -1,8 +1,8 @@
 #include "Slant/Stream/AudioStream.h"
 #include "Slant++/Stream/AudioStream.h"
 
-using namespace Slant;
-using namespace Slant::Stream;
+using namespace sl;
+using namespace sl::Stream;
 
 SlAudioFormat slStreamGetFormat(SlAudioStream *stream) {
     AudioStream* aStream = (AudioStream*) stream;

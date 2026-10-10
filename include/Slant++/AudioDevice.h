@@ -2,11 +2,11 @@
 
 #include "Context.h"
 
-namespace Slant {
+namespace sl {
 
     class SLANT_CPP_API AudioDevice {
     private:
-        std::unique_ptr<Slant::Context> _context;
+        std::unique_ptr<sl::Context> _context;
 
     protected:
         explicit AudioDevice(uint32_t sampleRate);

@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <stb_vorbis.c>
 
-namespace Slant::Stream {
+namespace sl::Stream {
     Vorbis::Vorbis(const std::string& path) {
         FILE* f;
 #ifdef _WIN32

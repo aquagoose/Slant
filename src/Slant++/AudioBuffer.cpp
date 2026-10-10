@@ -1,7 +1,7 @@
 #include "Slant++/AudioBuffer.h"
 #include "Impl.h"
 
-namespace Slant {
+namespace sl {
     AudioBuffer::AudioBuffer(size_t id, Impl* impl) {
         _id = id;
         _impl = impl;

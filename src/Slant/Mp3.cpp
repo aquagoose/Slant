@@ -2,7 +2,7 @@
 #include "Slant/Stream/Mp3.h"
 #include "Slant++/Stream/Mp3.h"
 
-using namespace Slant::Stream;
+using namespace sl::Stream;
 
 void slStreamLoadMp3(const char* path, SlAudioStream **pAudioStream) {
     Mp3* mp3 = new Mp3(path);

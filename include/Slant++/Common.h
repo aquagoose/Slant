@@ -9,7 +9,7 @@
 #define SLANT_CPP_API
 #endif
 
-namespace Slant {
+namespace sl {
 
     class Impl;
 

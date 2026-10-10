@@ -4,7 +4,7 @@
 
 #include "../../include/Slant++/AudioDevice.h"
 
-namespace Slant::Device
+namespace sl::Device
 {
     class SLANT_CPP_API AlsaDevice final : public AudioDevice
     {

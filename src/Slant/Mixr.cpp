@@ -2,7 +2,7 @@
 #include "Impl.h"
 #include "Slant++/AudioDevice.h"
 
-using namespace Slant;
+using namespace sl;
 
 void slCreateContext(uint32_t sampleRate, SlContext** pContext) {
     Impl* impl = new Impl(sampleRate);

@@ -7,9 +7,9 @@
 #include "Device/AlsaDevice.h"
 #endif
 
-namespace Slant {
+namespace sl {
     AudioDevice::AudioDevice(uint32_t sampleRate) {
-        _context = std::make_unique<Slant::Context>(sampleRate);
+        _context = std::make_unique<sl::Context>(sampleRate);
     }
 
     void AudioDevice::GetBuffer(uint8_t* buffer, size_t dataLength) {

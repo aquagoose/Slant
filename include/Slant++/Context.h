@@ -7,7 +7,7 @@
 #include "AudioBuffer.h"
 #include "AudioSource.h"
 
-namespace Slant {
+namespace sl {
 
     class AudioDevice;
 

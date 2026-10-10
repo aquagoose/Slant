@@ -4,7 +4,7 @@
 
 #include "Common.h"
 
-namespace Slant {
+namespace sl {
 
     class SLANT_CPP_API AudioBuffer {
     private:

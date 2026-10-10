@@ -11,7 +11,7 @@
     }\
 }
 
-namespace Slant::Device
+namespace sl::Device
 {
     void AlsaDevice::CallbackThread(AlsaDevice* device)
     {

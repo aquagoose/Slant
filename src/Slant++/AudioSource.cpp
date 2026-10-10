@@ -2,7 +2,7 @@
 #include "Slant++/AudioBuffer.h"
 #include "Impl.h"
 
-namespace Slant {
+namespace sl {
     AudioSource::AudioSource(size_t id, Impl* impl) {
         _id = id;
         _impl = impl;

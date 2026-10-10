@@ -2,7 +2,7 @@
 #include "Slant/Stream/Flac.h"
 #include "Slant++/Stream/Flac.h"
 
-using namespace Slant::Stream;
+using namespace sl::Stream;
 
 void slStreamLoadFlac(const char* path, SlAudioStream **pAudioStream) {
     Flac* flac = new Flac(path);

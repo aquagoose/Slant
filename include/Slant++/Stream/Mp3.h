@@ -6,7 +6,7 @@
 
 #include <minimp3_ex.h>
 
-namespace Slant::Stream {
+namespace sl::Stream {
 
     class SLANT_CPP_API Mp3 : public AudioStream {
     private:

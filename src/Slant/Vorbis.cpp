@@ -2,7 +2,7 @@
 #include "Slant/Stream/Vorbis.h"
 #include "Slant++/Stream/Vorbis.h"
 
-using namespace Slant::Stream;
+using namespace sl::Stream;
 
 void slStreamLoadVorbis(const char* path, SlAudioStream **pAudioStream) {
     Vorbis* vorbis = new Vorbis(path);

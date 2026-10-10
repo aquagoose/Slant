@@ -6,7 +6,7 @@
 #include "AudioStream.h"
 #include "../Common.h"
 
-namespace Slant::Stream {
+namespace sl::Stream {
 
     enum ADPCMType {
         IMA

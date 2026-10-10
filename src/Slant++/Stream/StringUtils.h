@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Slant
+namespace sl
 {
 #ifdef _WIN32
     std::wstring ToWString(const std::string& string);

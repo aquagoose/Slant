@@ -5,7 +5,7 @@
 #include "Common.h"
 #include "AudioBuffer.h"
 
-namespace Slant {
+namespace sl {
 
     class SLANT_CPP_API AudioSource {
     private:

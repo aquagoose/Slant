@@ -10,7 +10,7 @@
 
 #include "Slant++/Utils/ADPCM.h"
 
-namespace Slant {
+namespace sl {
 
     struct Buffer {
         std::vector<uint8_t> Data;

@@ -7,7 +7,7 @@
 #include <thread>
 #include <iostream>
 
-using namespace Slant;
+using namespace sl;
 
 struct CallbackData {
     std::unique_ptr<Stream::AudioStream> Stream;

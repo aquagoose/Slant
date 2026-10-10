@@ -2,7 +2,7 @@
 #include "Slant/Stream/Wav.h"
 #include "Slant++/Stream/Wav.h"
 
-using namespace Slant::Stream;
+using namespace sl::Stream;
 
 void slStreamLoadWav(const char* path, SlAudioStream **pAudioStream) {
     Wav* wav = new Wav(path);
